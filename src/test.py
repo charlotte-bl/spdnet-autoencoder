@@ -1,7 +1,7 @@
 import torch
 import plotly.graph_objects as go
 import numpy as np
-from metrics import trustworthiness
+from metrics import trustworthiness,pairwise_euclidean_distances
 
 def test(test_loader,model,criterion,noise="none"):
     fig = go.Figure()
@@ -25,8 +25,13 @@ def test(test_loader,model,criterion,noise="none"):
                 outputs_test = model.decoder(z)
                 data_test_loss = criterion(outputs_test, data_test)
                 batch_test_loss += data_test_loss.item()/data_test.size(0)
-                trustworthiness_recomp += trustworthiness(data_test,outputs_test)
-                trustworthiness_latent += trustworthiness(data_test,z)
+                if isinstance(criterion, torch.nn.MSELoss):
+                    trustworthiness_recomp += trustworthiness(data_test,outputs_test,pairwise_distance=pairwise_euclidean_distances)
+                    trustworthiness_latent += trustworthiness(data_test,z,pairwise_distance=pairwise_euclidean_distances)
+                else:
+                    trustworthiness_recomp += trustworthiness(data_test,outputs_test)
+                    trustworthiness_latent += trustworthiness(data_test,z)
+                
     else:
         for data_test,labels in test_loader:
             with torch.no_grad():  
@@ -40,8 +45,12 @@ def test(test_loader,model,criterion,noise="none"):
                 outputs_test = model.decoder(z)
                 data_test_loss = criterion(outputs_test, data_test)
                 batch_test_loss += data_test_loss.item()/data_test.size(0)
-                trustworthiness_recomp += trustworthiness(data_test,outputs_test)
-                trustworthiness_latent += trustworthiness(data_test,z)
+                if isinstance(criterion, torch.nn.MSELoss):
+                    trustworthiness_recomp += trustworthiness(data_test,outputs_test,pairwise_distance=pairwise_euclidean_distances)
+                    trustworthiness_latent += trustworthiness(data_test,z,pairwise_distance=pairwise_euclidean_distances)
+                else:
+                    trustworthiness_recomp += trustworthiness(data_test,outputs_test)
+                    trustworthiness_latent += trustworthiness(data_test,z)
             
     test_loss = batch_test_loss/len(test_loader)
     trustworthiness_recomp = trustworthiness_recomp/len(test_loader)

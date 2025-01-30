@@ -4,6 +4,7 @@ import json
 import argparse
 from data_preprocessing import preprocess_data,load_data
 from model import Autoencoder_SPDnet
+from model_n_layers import Autoencoder_nlayers_SPDnet
 from train import train
 from test import test
 from save_model import save_model
@@ -36,6 +37,7 @@ def main():
     #train/val model
     ho, hi, ni, no = 1,1,X.data.shape[1],args.latent_dim
     model = Autoencoder_SPDnet(ho, hi, ni, no,args.layers)
+    model = Autoencoder_nlayers_SPDnet(ho, hi, ni, no,args.layers)
     if args.loss == 'riemann':
         criterion = RiemannianDistanceLoss()
     else:
@@ -51,7 +53,7 @@ def main():
     # ...
 
     #save_model
-    save_model(model,3,args.loss,args.noise,args.epochs)
+    save_model(model,args.layers,args.loss,args.noise,args.epochs)
 
     #save datas
     path = "../data/model_"+args.loss+"_"+args.noise+"_"+str(args.epochs)
