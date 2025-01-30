@@ -10,6 +10,7 @@ from test import test
 from save_model import save_model
 from spdnet.loss import RiemannianDistanceLoss
 import torch
+from pyriemann.classification import MDM
 import warnings
 
 def main():
@@ -36,16 +37,17 @@ def main():
 
     #train/val model
     ho, hi, ni, no = 1,1,X.data.shape[1],args.latent_dim
-    model = Autoencoder_SPDnet(ho, hi, ni, no,args.layers)
-    model = Autoencoder_nlayers_SPDnet(ho, hi, ni, no,args.layers)
+    auto_encoder = Autoencoder_nlayers_SPDnet(ho, hi, ni, no,args.layers)
     if args.loss == 'riemann':
         criterion = RiemannianDistanceLoss()
+        mdm = MDM()
     else:
         criterion = torch.nn.MSELoss()
-    data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss = train(train_loader,val_loader,model,args.epochs,criterion,noise=args.noise)
+        mdm = MDM(metric="euclid")
+    data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss = train(train_loader,val_loader,auto_encoder,args.epochs,criterion,noise=args.noise)
 
     #test model
-    data_test,outputs_test,test_loss = test(test_loader,model,criterion,noise=args.noise)
+    data_test,outputs_test,test_loss = test(test_loader,auto_encoder,criterion,noise=args.noise)
 
     # evaluate a un autre moment :
     # model.load_state_dict(torch.load(PATH, weights_only=True))
@@ -53,10 +55,9 @@ def main():
     # ...
 
     #save_model
-    save_model(model,args.layers,args.loss,args.noise,args.epochs)
+    save_model(auto_encoder,args.layers,args.loss,args.noise,args.epochs)
 
     #save datas
-    path = "../data/model_"+args.loss+"_"+args.noise+"_"+str(args.epochs)
 
     pass
 

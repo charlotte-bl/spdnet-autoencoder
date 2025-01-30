@@ -60,21 +60,36 @@ def load_data():
     X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[8])
     return X,labels
 
+def train_test_split(X,labels):
+    #print(X.shape)
+    #print(meta['session'].value_counts())
+    X_train,labels_train = X[:144],labels[144:]
+    X_test,labels_test = X[144:],labels[144:]
+    return X_train,labels_train,X_test,labels_test
+
 def preprocess_data(X,labels,batch_size,noise):
+    data_train_val,labels_train,data_test,labels_test = train_test_split(X,labels)
 
     #covariances from data
-    cov = raw_to_cov(X)
+    cov_train_val = raw_to_cov(data_train_val)
+    cov_test = raw_to_cov(data_test)
 
     #add noise if needed
     if noise=="salt_pepper":
-        dataset = NoisyCleanLabeledDataset(cov,labels,add_salt_and_pepper_noise_to_covariances)
+        dataset_train_val = NoisyCleanLabeledDataset(cov_train_val,labels_train,add_salt_and_pepper_noise_to_covariances)
+        x_test = NoisyCleanLabeledDataset(cov_test,labels_test,add_salt_and_pepper_noise_to_covariances)
     elif noise=="masking":
-        dataset = NoisyCleanLabeledDataset(cov,labels,add_masking_noise_to_covariances)
+        dataset_train_val = NoisyCleanLabeledDataset(cov_train_val,labels_train,add_masking_noise_to_covariances)
+        x_test = NoisyCleanLabeledDataset(cov_test,labels_test,add_masking_noise_to_covariances)
     elif noise=="gaussian":
-        dataset = NoisyCleanLabeledDataset(cov,labels,add_gaussian_noise_to_covariances)
+        dataset_train_val = NoisyCleanLabeledDataset(cov_train_val,labels_train,add_gaussian_noise_to_covariances)
+        x_test = NoisyCleanLabeledDataset(cov_test,labels_test,add_gaussian_noise_to_covariances)
     else:
-        dataset = LabeledDataset(cov,labels)
-    x_train,x_val,x_test = torch.utils.data.random_split(dataset,lengths=[0.5,0.25,0.25])
+        dataset_train_val = LabeledDataset(cov_train_val,labels_train)
+        x_test = LabeledDataset(cov_test,labels_test)
+    
+    x_train,x_val = torch.utils.data.random_split(dataset_train_val,lengths=[0.8,0.2])
+
     num_workers=0
     train_loader = torch.utils.data.DataLoader(x_train,
                                            batch_size=batch_size,
@@ -92,3 +107,7 @@ def preprocess_data(X,labels,batch_size,noise):
                                             num_workers=num_workers,
                                             pin_memory=True)
     return train_loader, val_loader, test_loader
+
+if __name__ == '__main__':
+    X,labels = load_data()
+    train_test_split(X,labels)
