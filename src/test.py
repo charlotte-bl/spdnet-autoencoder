@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 import numpy as np
 from metrics import trustworthiness
 
-def test(test_loader,model,criterion):
+def test(test_loader,model,criterion,noise="none"):
     fig = go.Figure()
     class_right = []
     class_left = []
@@ -12,20 +12,36 @@ def test(test_loader,model,criterion):
     trustworthiness_latent = 0.0
     model.eval()
     #for data_test,labels in tqdm(test_loader):
-    for data_test,labels in test_loader:
-        with torch.no_grad():  
-            z = model.encoder(data_test)
-            #ajout point dans liste pour affichage
-            for i in range(z.shape[0]):
-                if labels[i]=='right_hand':
-                    class_right.append(z[i].numpy())
-                else:
-                    class_left.append(z[i].numpy())
-            outputs_test = model.decoder(z)
-            data_test_loss = criterion(outputs_test, data_test)
-            batch_test_loss += data_test_loss.item()/data_test.size(0)
-            trustworthiness_recomp += trustworthiness(data_test,outputs_test)
-            trustworthiness_latent += trustworthiness(data_test,z)
+    if noise!="none":
+        for noisy_test, data_test,labels in test_loader:
+            with torch.no_grad():                 
+                z = model.encoder(noisy_test)
+                #ajout point dans liste pour affichage
+                for i in range(z.shape[0]):
+                    if labels[i]=='right_hand':
+                        class_right.append(z[i].numpy())
+                    else:
+                        class_left.append(z[i].numpy())
+                outputs_test = model.decoder(z)
+                data_test_loss = criterion(outputs_test, data_test)
+                batch_test_loss += data_test_loss.item()/data_test.size(0)
+                trustworthiness_recomp += trustworthiness(data_test,outputs_test)
+                trustworthiness_latent += trustworthiness(data_test,z)
+    else:
+        for data_test,labels in test_loader:
+            with torch.no_grad():  
+                z = model.encoder(data_test)
+                #ajout point dans liste pour affichage
+                for i in range(z.shape[0]):
+                    if labels[i]=='right_hand':
+                        class_right.append(z[i].numpy())
+                    else:
+                        class_left.append(z[i].numpy())
+                outputs_test = model.decoder(z)
+                data_test_loss = criterion(outputs_test, data_test)
+                batch_test_loss += data_test_loss.item()/data_test.size(0)
+                trustworthiness_recomp += trustworthiness(data_test,outputs_test)
+                trustworthiness_latent += trustworthiness(data_test,z)
             
     test_loss = batch_test_loss/len(test_loader)
     trustworthiness_recomp = trustworthiness_recomp/len(test_loader)

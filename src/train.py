@@ -15,7 +15,7 @@ def train(train_loader,val_loader,model,n_epochs,criterion,noise="none"):
         model.train()
         if noise!="none":
             for noisy_train, data_train,_ in train_loader: #for data_train,_ in tqdm(train_loader):
-                outputs_train = model(data_train)
+                outputs_train = model(noisy_train)
                 data_train_loss = criterion(outputs_train, data_train)
                 batch_train_loss += data_train_loss.item()/data_train.size(0)
                 data_train_loss.backward()
@@ -35,7 +35,7 @@ def train(train_loader,val_loader,model,n_epochs,criterion,noise="none"):
         if noise!="none":
              for noisy_val, data_val ,_ in val_loader:
                 with torch.no_grad():
-                        outputs_val = model(data_val)
+                        outputs_val = model(noisy_val)
                         data_val_loss = criterion(outputs_val, data_val)
                         batch_val_loss += data_val_loss.item()/data_val.size(0)
         else:
