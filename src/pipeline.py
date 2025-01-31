@@ -7,7 +7,8 @@ from model import Autoencoder_SPDnet
 from model_n_layers import Autoencoder_nlayers_SPDnet
 from train import train
 from test import test
-from save_model import save_model
+from save import save_model
+from save import save_data
 from spdnet.loss import RiemannianDistanceLoss
 import torch
 from pyriemann.classification import MDM
@@ -25,6 +26,7 @@ def main():
     parser.add_argument('-c', '--layers', type=int , default = 3, help='How many layers the model have')
     parser.add_argument('-n','--noise', default = 'none', help='Type of noise for the denoising. none if there is no noise.', choices=['none', 'gaussian', 'salt_pepper','masking'])
     parser.add_argument('-l','--loss', default = 'riemann', help='Loss. It can be riemannian or euclidean.', choices = ['euclidean','riemann'])
+    parser.add_argument('-s', '--show', default=False,action='store_true')
     args = parser.parse_args()
     #stored in : args.epochs, args.batch_size, args.learning_rate, args.latent_dim, args.noise , args.loss
 
@@ -33,9 +35,8 @@ def main():
 
     #preprocess data
     train_loader, val_loader, test_loader = preprocess_data(X,labels,batch_size=args.batch_size,noise=args.noise)
-    #load model
 
-    #train/val model
+    #load model
     ho, hi, ni, no = 1,1,X.data.shape[1],args.latent_dim
     auto_encoder = Autoencoder_nlayers_SPDnet(ho, hi, ni, no,args.layers)
     if args.loss == 'riemann':
@@ -44,23 +45,19 @@ def main():
     else:
         criterion = torch.nn.MSELoss()
         mdm = MDM(metric="euclid")
+
+    #train model
     data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss = train(train_loader,val_loader,auto_encoder,args.epochs,criterion,noise=args.noise)
 
     #test model
-    data_test,outputs_test,test_loss = test(test_loader,auto_encoder,criterion,noise=args.noise)
-
-    # evaluate a un autre moment :
-    # model.load_state_dict(torch.load(PATH, weights_only=True))
-    # model.eval()
-    # ...
+    data_test,outputs_test,test_loss = test(test_loader,auto_encoder,criterion,noise=args.noise,show=args.show)
 
     #save_model
     save_model(auto_encoder,args.layers,args.loss,args.noise,args.epochs,args.batch_size)
 
     #save datas
-
-    pass
+    save_data(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,args.show)
 
 if __name__ == '__main__':
-    warnings.filterwarnings('ignore')
+    #warnings.filterwarnings('ignore')
     main()

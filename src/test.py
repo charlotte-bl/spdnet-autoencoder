@@ -1,10 +1,8 @@
 import torch
-import plotly.graph_objects as go
-import numpy as np
 from metrics import trustworthiness,pairwise_euclidean_distances
+from visualization import show_latent_dim_2
 
-def test(test_loader,model,criterion,noise="none"):
-    fig = go.Figure()
+def test(test_loader,model,criterion,noise="none",show=False):
     class_right = []
     class_left = []
     batch_test_loss = 0.0
@@ -62,36 +60,7 @@ def test(test_loader,model,criterion,noise="none"):
 
     #affichage si matrice 2x2
     if z.shape[2]==2:
-        class_right = np.array(class_right)
-        class_left = np.array(class_left)
-        fig = fig.add_trace(
-                go.Scatter3d(
-                    x=class_right[:, 0, 0, 0], # a
-                    y=class_right[:, 0, 0, 1], # b
-                    z=class_right[:, 0, 1, 1], # c
-                    mode="markers",
-                    name='right_hand',
-                    marker=dict(size=8, color="pink", opacity=0.9),
-                )
-            )
-        fig = fig.add_trace(
-                go.Scatter3d(
-                    x=class_left[:, 0, 0, 0], # a
-                    y=class_left[:, 0, 0, 1], # b
-                    z=class_left[:, 0, 1, 1], # c
-                    mode="markers",
-                    name='left_hand',
-                    marker=dict(size=8, color="green", opacity=0.9),
-                )
-            )
-        fig.update_layout(
-            title="Affichage de matrices SPD",
-            scene=dict(xaxis_title="a", yaxis_title="b", zaxis_title="c"),
-            width=900,
-            height=700,
-            autosize=False,
-            margin=dict(t=30, b=0, l=0, r=0),
-            template="plotly_white",
-        )   
-        fig.show()
+        show_latent_dim_2(class_right,class_left,show)
+        
+
     return data_test,outputs_test,test_loss
