@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch
 
 class Autoencoder_SPDnet(nn.Module):
-    def __init__(self,ho,hi,ni,no):
+    def __init__(self,ho,hi,ni,no,layers):
         """
         Autoencoder for SPD matrices.
         Parameters :
