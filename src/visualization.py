@@ -13,8 +13,7 @@ def show_first_image(image,show=False):
 def show_first_image_from_loader(image_from_loader,show=False):
     image = image_from_loader.data[0].squeeze(0).numpy()
     plt.imshow(image,cmap='gray')
-    path = 
-    plt.savefig(path)
+    plt.savefig("test.png")
     if show:
         plt.show()
 

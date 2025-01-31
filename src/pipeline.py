@@ -1,18 +1,19 @@
 #pipeline.py
 
-import json
+import warnings
+import os
 import argparse
+import torch
 from data_preprocessing import preprocess_data,load_data
 from model import Autoencoder_SPDnet
 from model_n_layers import Autoencoder_nlayers_SPDnet
+from pyriemann.classification import MDM
+from spdnet.loss import RiemannianDistanceLoss
 from train import train
 from test import test
+from save import find_name_folder
 from save import save_model
 from save import save_data
-from spdnet.loss import RiemannianDistanceLoss
-import torch
-from pyriemann.classification import MDM
-import warnings
 
 def main():
     #load config
@@ -52,11 +53,15 @@ def main():
     #test model
     data_test,outputs_test,test_loss = test(test_loader,auto_encoder,criterion,noise=args.noise,show=args.show)
 
+    #find folder name to save datas
+    path = find_name_folder("../models",args.layers,args.loss,args.noise,args.epochs,args.batch_size)
+    os.mkdir(path)
+    
     #save_model
-    save_model(auto_encoder,args.layers,args.loss,args.noise,args.epochs,args.batch_size)
+    save_model(auto_encoder,path)
 
     #save datas
-    save_data(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,args.show)
+    save_data(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,path,args.show)
 
 if __name__ == '__main__':
     #warnings.filterwarnings('ignore')
