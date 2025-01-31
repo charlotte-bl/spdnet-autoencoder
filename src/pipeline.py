@@ -55,7 +55,7 @@ def main():
     # ...
 
     #save_model
-    save_model(auto_encoder,args.layers,args.loss,args.noise,args.epochs)
+    save_model(auto_encoder,args.layers,args.loss,args.noise,args.epochs,args.batch_size)
 
     #save datas
 

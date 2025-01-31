@@ -1,20 +1,20 @@
 import torch
 import os
 
-def find_name_model(number_layers,loss,noise,epochs):
+def find_name_model(number_layers,loss,noise,epochs,batch_size):
     folder = "../models/"
     extension = ".pt"
     base_name = "model-"
-    return find_name(folder,extension,base_name,number_layers,loss,noise,epochs)
+    return find_name(folder,extension,base_name,number_layers,loss,noise,epochs,batch_size)
 
-def find_name_data(number_layers,loss,noise,epochs):
+def find_name_data(number_layers,loss,noise,epochs,batch_size):
     folder = "../data/"
     extension = ".txt"
     base_name = "datas-"
-    return find_name(folder,extension,base_name,number_layers,loss,noise,epochs)
+    return find_name(folder,extension,base_name,number_layers,loss,noise,epochs,batch_size)
 
-def find_name(folder,extension,base_name,number_layers,loss,noise,epochs):
-    name = base_name+"autoencoder_n-layers-"+str(number_layers)+"_loss-"+loss+"_noise-"+noise+"_n-epochs-"+str(epochs)
+def find_name(folder,extension,base_name,number_layers,loss,noise,epochs,batch_size):
+    name = base_name+"autoencoder_n-layers-"+str(number_layers)+"_loss-"+loss+"_noise-"+noise+"_n-epochs-"+str(epochs)+"_batch-size-"+str(batch_size)
     index=1
     while True:
         new_name = f"{name}_{index:02d}{extension}"
@@ -23,8 +23,8 @@ def find_name(folder,extension,base_name,number_layers,loss,noise,epochs):
             return file_path
         index = index+1
 
-def save_model(model,number_layers,loss,noise,epochs):
-    path = find_name_model(number_layers,loss,noise,epochs)
+def save_model(model,number_layers,loss,noise,epochs,batch_size):
+    path = find_name_model(number_layers,loss,noise,epochs,batch_size)
     torch.save(model.state_dict(), path)
 
 def save_data():

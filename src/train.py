@@ -53,7 +53,8 @@ def train(train_loader,val_loader,model,n_epochs,criterion,noise="none"):
 
         #print losses
         print(f"Epoch : {epoch}")
-        print(f"| Perte train : {epoch_train_loss} ")
+        print(f"| Perte train moyenne du batch: {epoch_train_loss} ")
+        #print(f"| Perte train dernier élément du batch : {data_train_loss.item()/data_train.size(0)} ")
         print(f"| Perte val : {epoch_val_loss} ")
 
         list_train_loss.append(epoch_train_loss)
