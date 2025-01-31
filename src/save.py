@@ -1,6 +1,6 @@
 import torch
 import os
-#from visualization import show_first_image_from_loader,show_loss
+from visualization import show_first_image_from_loader,show_loss
 
 def find_name_model(number_layers,loss,noise,epochs,batch_size):
     folder = "../models/"
@@ -39,9 +39,9 @@ def save_model(model,folder):
     torch.save(model.state_dict(), path)
 
 def save_data(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,path,show=False):    
-    show_first_image_from_loader(data_train,show)
-    show_first_image_from_loader(outputs_train,show)
-    show_loss(list_train_loss,list_val_loss,show)
+    show_first_image_from_loader(data_train,path,show,name="original")
+    show_first_image_from_loader(outputs_train,path,show,name="reconstruction")
+    show_loss(list_train_loss,list_val_loss,path,show,name="loss_progression")
 
 if __name__ == '__main__':
     path = find_name_folder("/models",3,'riemann','none',5,16)

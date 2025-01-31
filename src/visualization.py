@@ -10,19 +10,27 @@ def show_first_image(image,show=False):
     if show:
         plt.show()
 
-def show_first_image_from_loader(image_from_loader,show=False):
+def show_first_image_from_loader(image_from_loader,path,show=False,name=""):
     image = image_from_loader.data[0].squeeze(0).numpy()
     plt.imshow(image,cmap='gray')
-    plt.savefig("test.png")
+    print(path+name)
     if show:
         plt.show()
+    if name!="":
+        plt.savefig(path+name)
+    plt.clf()
 
-def show_loss(list_train_loss,list_val_loss,show=False):
+
+def show_loss(list_train_loss,list_val_loss,path,show=False,name=""):
     plt.plot(list_train_loss,label="train")
     plt.plot(list_val_loss,label="val")
     plt.legend()
+    print(path+name)
     if show:
         plt.show()
+    if name!="":
+        plt.savefig(path+name)
+    plt.clf()
 
 def show_metric_latent_dim():
     pass
