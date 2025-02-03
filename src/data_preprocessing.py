@@ -4,6 +4,7 @@ import moabb
 from moabb.datasets import BNCI2014_001 # On s'interesse à ce dataset par exemple pour l'instant, il en existe pleins d'autres (cf site de MOABB)
 from moabb.paradigms import FilterBankLeftRightImagery
 
+# functions for noise
 def add_gaussian_noise_to_covariances(cov):
     cov_noisy = torch.empty(0, 1, cov.shape[2], cov.shape[3])
     for i in range(cov.shape[0]):
@@ -21,6 +22,8 @@ def add_salt_and_pepper_noise_to_covariances(cov):
 
 def add_masking_noise_to_covariances(cov):
     return cov
+
+# class to store the data to load the dataloader
 
 class NoisyCleanDataset(torch.utils.data.Dataset):
     def __init__(self,data,add_noise=add_gaussian_noise_to_covariances):
@@ -66,6 +69,8 @@ class LabeledDataset(torch.utils.data.Dataset):
         label = self.label[idx]
         return data,label
 
+# preprocessing for raw datas (such as BCI)
+
 def raw_to_cov(raw_data):
     """
     Transform raw data to covarainces data
@@ -86,6 +91,47 @@ def train_test_split_BCI(X,labels):
     X_train,labels_train = X[:144],labels[144:]
     X_test,labels_test = X[144:],labels[144:]
     return X_train,labels_train,X_test,labels_test
+
+def preprocess_data_cov_no_labels(X,batch_size,noise):
+    if noise=="salt_pepper":
+        dataset = NoisyCleanDataset(X,add_salt_and_pepper_noise_to_covariances)
+    elif noise=="masking":
+        dataset = NoisyCleanDataset(X,add_masking_noise_to_covariances)
+    elif noise=="gaussian":
+        dataset = NoisyCleanDataset(X,add_gaussian_noise_to_covariances)
+    else:
+        dataset = Dataset(X)
+    x_train,x_val,x_test = torch.utils.data.random_split(dataset,lengths=[0.5,0.25,0.25])
+    train_loader = torch.utils.data.DataLoader(x_train, batch_size=batch_size, shuffle=True)
+    val_loader = torch.utils.data.DataLoader(x_val, batch_size=batch_size*2, shuffle=False)
+    test_loader = torch.utils.data.DataLoader(x_test, batch_size=batch_size*2, shuffle=False)
+    return train_loader, val_loader, test_loader
+
+def preprocess_data_raw_no_labels(X_raw,batch_size,noise):
+    cov = raw_to_cov(X_raw)
+    return preprocess_data_cov_no_labels(cov,labels,batch_size,noise)
+
+def preprocess_data_cov(X,labels,batch_size,noise):
+    #add noise if needed
+    if noise=="salt_pepper":
+        dataset = NoisyCleanLabeledDataset(X,labels,add_salt_and_pepper_noise_to_covariances)
+    elif noise=="masking":
+        dataset = NoisyCleanLabeledDataset(X,labels,add_masking_noise_to_covariances)
+    elif noise=="gaussian":
+        dataset = NoisyCleanLabeledDataset(X,labels,add_gaussian_noise_to_covariances)
+    else:
+        dataset = LabeledDataset(X,labels)
+    
+    x_train,x_val,x_test = torch.utils.data.random_split(dataset,lengths=[0.5,0.25,0.25])
+
+    train_loader = torch.utils.data.DataLoader(x_train, batch_size=batch_size, shuffle=True)
+    val_loader = torch.utils.data.DataLoader(x_val, batch_size=batch_size*2, shuffle=False)
+    test_loader = torch.utils.data.DataLoader(x_test, batch_size=batch_size*2, shuffle=False)
+    return train_loader, val_loader, test_loader
+
+def preprocess_data_raw(X_raw,labels,batch_size,noise):
+    cov = raw_to_cov(X_raw)
+    return preprocess_data_cov(cov,labels,batch_size,noise)
 
 def preprocess_data_BCI(X,labels,batch_size,noise):
     data_train_val,labels_train,data_test,labels_test = train_test_split_BCI(X,labels)
@@ -110,22 +156,10 @@ def preprocess_data_BCI(X,labels,batch_size,noise):
     
     x_train,x_val = torch.utils.data.random_split(dataset_train_val,lengths=[0.8,0.2])
 
-    num_workers=0
-    train_loader = torch.utils.data.DataLoader(x_train,
-                                           batch_size=batch_size,
-                                           num_workers=num_workers,
-                                           pin_memory=True)
+    train_loader = torch.utils.data.DataLoader(x_train, batch_size=batch_size, shuffle=True)
+    val_loader = torch.utils.data.DataLoader(x_val, batch_size=batch_size*2, shuffle=False)
+    test_loader = torch.utils.data.DataLoader(x_test, batch_size=batch_size, shuffle=False)
 
-    val_loader = torch.utils.data.DataLoader(x_val,
-                                            batch_size=batch_size,
-                                            num_workers=num_workers,
-                                            pin_memory=True)
-
-
-    test_loader = torch.utils.data.DataLoader(x_test,
-                                            batch_size=batch_size,
-                                            num_workers=num_workers,
-                                            pin_memory=True)
     return train_loader, val_loader, test_loader
 
 if __name__ == '__main__':

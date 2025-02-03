@@ -2,7 +2,7 @@ from spdnet import nn as spdnet
 import torch.nn as nn
 import torch
 
-class Autoencoder_SPDnet(nn.Module):
+class Autoencoder_test_SPDnet(nn.Module):
     def __init__(self,ho,hi,ni,no,layers):
         """
         Autoencoder for SPD matrices.
@@ -10,7 +10,7 @@ class Autoencoder_SPDnet(nn.Module):
         - ho, hi : output and input channels for bimap
         - no, ni : output and input matrix dimensions
         """
-        super(Autoencoder_SPDnet, self).__init__()
+        super(Autoencoder_test_SPDnet, self).__init__()
         self.ho = ho
         self.hi = hi
         self.ni = ni

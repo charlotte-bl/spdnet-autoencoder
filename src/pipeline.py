@@ -5,7 +5,7 @@ import os
 import argparse
 import torch
 from data_preprocessing import preprocess_data_BCI,load_data_BCI
-from model import Autoencoder_SPDnet
+from model_test import Autoencoder_test_SPDnet
 from model_n_regular_layers import Autoencoder_nlayers_regular_SPDnet
 from model_n_div2_layers import Autoencoder_layers_byhalf_SPDnet
 from pyriemann.classification import MDM
@@ -14,7 +14,7 @@ from train import train
 from test import test
 from save import find_name_folder
 from save import save_model
-from save import save_data
+from save import save_images_and_results
 
 def main():
     #load config
@@ -30,8 +30,9 @@ def main():
     parser.add_argument('-l','--loss', default = 'riemann', help='Loss. It can be riemannian or euclidean.', choices = ['euclidean','riemann'])
     parser.add_argument('-s', '--show', default=False,action='store_true')
     parser.add_argument('-t', '--layers_type',default='regular', help = 'How layers are implemented. Regular means layers are regular between input channels and output channels. By_halves means layers are reduced by half until no. If a layer is in dimension<10x10, then it is directly going to no.', choices = ['regular','by_halves'])
+    parser.add_argument('-j', '--data', default='BCI', help ="Datas to train and test the autoencoder with.")
     args = parser.parse_args()
-    #stored in : args.epochs, args.batch_size, args.learning_rate, args.latent_dim, args.noise , args.loss, args.layers_type
+    #stored in : args.epochs, args.batch_size, args.learning_rate, args.latent_dim, args.noise , args.loss, args.layers_type, args.data
 
     #load data
     X,labels = load_data_BCI()
@@ -67,7 +68,7 @@ def main():
     save_model(auto_encoder,path)
 
     #save datas
-    save_data(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,path,args.show)
+    save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,path,args.show)
 
 if __name__ == '__main__':
     warnings.filterwarnings('ignore')
