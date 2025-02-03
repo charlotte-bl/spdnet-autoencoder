@@ -22,6 +22,26 @@ def add_salt_and_pepper_noise_to_covariances(cov):
 def add_masking_noise_to_covariances(cov):
     return cov
 
+class NoisyCleanDataset(torch.utils.data.Dataset):
+    def __init__(self,data,add_noise=add_gaussian_noise_to_covariances):
+        self.data = data
+        self.noised_data = add_noise(data)
+    def __len__(self):
+        return len(self.data)
+    def __getitem__(self,idx):
+        noisy = self.noised_data[idx]
+        clean = self.data[idx]
+        return noisy,clean
+
+class Dataset(torch.utils.data.Dataset):
+    def __init__(self,data):
+        self.data = data
+    def __len__(self):
+        return len(self.data)
+    def __getitem__(self,idx):
+        data = self.data[idx]
+        return data
+    
 class NoisyCleanLabeledDataset(torch.utils.data.Dataset):
     def __init__(self,data,labels,add_noise=add_gaussian_noise_to_covariances):
         self.data = data
@@ -33,7 +53,7 @@ class NoisyCleanLabeledDataset(torch.utils.data.Dataset):
         noisy = self.noised_data[idx]
         clean = self.data[idx]
         label = self.labels[idx]
-        return noisy,clean, label
+        return noisy,clean,label
 
 class LabeledDataset(torch.utils.data.Dataset):
     def __init__(self,data,label):
@@ -54,21 +74,21 @@ def raw_to_cov(raw_data):
     """
     return torch.from_numpy(Covariances(estimator='scm').fit_transform(raw_data)).unsqueeze(1)
 
-def load_data():
+def load_data_BCI():
     paradigm = FilterBankLeftRightImagery(filters =[[7,35]])
     dataset = BNCI2014_001()
     X, labels, meta = paradigm.get_data(dataset=dataset, subjects=[8])
     return X,labels
 
-def train_test_split(X,labels):
+def train_test_split_BCI(X,labels):
     #print(X.shape)
     #print(meta['session'].value_counts())
     X_train,labels_train = X[:144],labels[144:]
     X_test,labels_test = X[144:],labels[144:]
     return X_train,labels_train,X_test,labels_test
 
-def preprocess_data(X,labels,batch_size,noise):
-    data_train_val,labels_train,data_test,labels_test = train_test_split(X,labels)
+def preprocess_data_BCI(X,labels,batch_size,noise):
+    data_train_val,labels_train,data_test,labels_test = train_test_split_BCI(X,labels)
 
     #covariances from data
     cov_train_val = raw_to_cov(data_train_val)
@@ -109,5 +129,5 @@ def preprocess_data(X,labels,batch_size,noise):
     return train_loader, val_loader, test_loader
 
 if __name__ == '__main__':
-    X,labels = load_data()
-    train_test_split(X,labels)
+    X,labels = load_data_BCI()
+    train_test_split_BCI(X,labels)

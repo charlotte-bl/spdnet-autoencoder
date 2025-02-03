@@ -18,7 +18,9 @@ class Autoencoder_SPDnet(nn.Module):
         self.other_param = nn.Parameter(torch.randn(ho, hi, ni, no))
         self.encoder=nn.Sequential(
             spdnet.BiMap(self.ho,self.hi,self.ni,11),
+            spdnet.ReEig(),
             spdnet.BiMap(self.ho,self.hi,11,6),
+            spdnet.ReEig(),
             spdnet.BiMap(self.ho,self.hi,6,self.no),
             spdnet.ReEig(),
             spdnet.LogEig(),

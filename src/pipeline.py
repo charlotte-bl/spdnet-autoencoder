@@ -4,7 +4,7 @@ import warnings
 import os
 import argparse
 import torch
-from data_preprocessing import preprocess_data,load_data
+from data_preprocessing import preprocess_data_BCI,load_data_BCI
 from model import Autoencoder_SPDnet
 from model_n_layers import Autoencoder_nlayers_SPDnet
 from pyriemann.classification import MDM
@@ -32,10 +32,10 @@ def main():
     #stored in : args.epochs, args.batch_size, args.learning_rate, args.latent_dim, args.noise , args.loss
 
     #load data
-    X,labels = load_data()
+    X,labels = load_data_BCI()
 
     #preprocess data
-    train_loader, val_loader, test_loader = preprocess_data(X,labels,batch_size=args.batch_size,noise=args.noise)
+    train_loader, val_loader, test_loader = preprocess_data_BCI(X,labels,batch_size=args.batch_size,noise=args.noise)
 
     #load model
     ho, hi, ni, no = 1,1,X.data.shape[1],args.latent_dim
