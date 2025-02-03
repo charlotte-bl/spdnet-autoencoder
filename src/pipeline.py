@@ -6,7 +6,8 @@ import argparse
 import torch
 from data_preprocessing import preprocess_data_BCI,load_data_BCI
 from model import Autoencoder_SPDnet
-from model_n_layers import Autoencoder_nlayers_SPDnet
+from model_n_regular_layers import Autoencoder_nlayers_regular_SPDnet
+from model_n_div2_layers import Autoencoder_layers_byhalf_SPDnet
 from pyriemann.classification import MDM
 from spdnet.loss import RiemannianDistanceLoss
 from train import train
@@ -28,8 +29,9 @@ def main():
     parser.add_argument('-n','--noise', default = 'none', help='Type of noise for the denoising. none if there is no noise.', choices=['none', 'gaussian', 'salt_pepper','masking'])
     parser.add_argument('-l','--loss', default = 'riemann', help='Loss. It can be riemannian or euclidean.', choices = ['euclidean','riemann'])
     parser.add_argument('-s', '--show', default=False,action='store_true')
+    parser.add_argument('-t', '--layers_type',default='regular', help = 'How layers are implemented. Regular means layers are regular between input channels and output channels. By_halves means layers are reduced by half until no. If a layer is in dimension<10x10, then it is directly going to no.', choices = ['regular','by_halves'])
     args = parser.parse_args()
-    #stored in : args.epochs, args.batch_size, args.learning_rate, args.latent_dim, args.noise , args.loss
+    #stored in : args.epochs, args.batch_size, args.learning_rate, args.latent_dim, args.noise , args.loss, args.layers_type
 
     #load data
     X,labels = load_data_BCI()
@@ -39,7 +41,11 @@ def main():
 
     #load model
     ho, hi, ni, no = 1,1,X.data.shape[1],args.latent_dim
-    auto_encoder = Autoencoder_nlayers_SPDnet(ho, hi, ni, no,args.layers)
+    if args.layers_type == 'regular':
+        auto_encoder = Autoencoder_nlayers_regular_SPDnet(ho, hi, ni, no,args.layers)
+    else:
+        auto_encoder = Autoencoder_layers_byhalf_SPDnet(ho, hi, ni, no)
+
     if args.loss == 'riemann':
         criterion = RiemannianDistanceLoss()
         mdm = MDM()
@@ -51,10 +57,10 @@ def main():
     data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss = train(train_loader,val_loader,auto_encoder,args.epochs,criterion,noise=args.noise)
 
     #test model
-    data_test,outputs_test,test_loss = test(test_loader,auto_encoder,criterion,noise=args.noise,show=args.show)
+    data_test,outputs_test,test_loss = test(test_loader,auto_encoder,criterion,noise=args.noise,show=args.show,class_1_name=labels[0])
 
     #find folder name to save datas
-    path = find_name_folder("../models",args.layers,args.loss,args.noise,args.epochs,args.batch_size)
+    path = find_name_folder("../models",args.layers,args.loss,args.noise,args.epochs,args.batch_size,args.layers_type)
     os.mkdir(path)
     
     #save_model
@@ -64,5 +70,5 @@ def main():
     save_data(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,path,args.show)
 
 if __name__ == '__main__':
-    #warnings.filterwarnings('ignore')
+    warnings.filterwarnings('ignore')
     main()

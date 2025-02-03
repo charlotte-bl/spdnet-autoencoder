@@ -2,7 +2,7 @@ from spdnet import nn as spdnet
 import torch.nn as nn
 import torch
 
-class Autoencoder_nlayers_SPDnet(nn.Module):
+class Autoencoder_nlayers_regular_SPDnet(nn.Module):
     def __init__(self, ho, hi, ni, no, n_layers):
         """
         Autoencoder pour les matrices SPD.
@@ -11,7 +11,7 @@ class Autoencoder_nlayers_SPDnet(nn.Module):
         - ni, no : dimensions des matrices d'entrée et de sortie
         - n_layers : nombre de couches dans l'encodeur et le décodeur
         """
-        super(Autoencoder_nlayers_SPDnet, self).__init__()
+        super(Autoencoder_nlayers_regular_SPDnet, self).__init__()
         self.ho = ho
         self.hi = hi
         self.ni = ni
@@ -22,17 +22,17 @@ class Autoencoder_nlayers_SPDnet(nn.Module):
         
         #calcul tailles des couches intermediares
         self.layer_sizes = [ni]
-        for i in range(1, n_layers-1):
-            size = (ni + no) * (n_layers-i) / n_layers
-            self.layer_sizes.append(int(size))
-        self.layer_sizes.append(no)
+        step = (self.no - self.ni) / (self.n_layers - 1)
+        for i in range(1, self.n_layers - 1):
+            size = self.ni + int(i * step)
+            self.layer_sizes.append(size)
+        self.layer_sizes.append(self.no)
 
         # encoder
         encoder_layers = []
-        for i in range(n_layers):
-            encoder_layers.append(spdnet.BiMap(self.ho, self.hi, self.ni if i == 0 else self.layer_sizes[i-1], self.layer_sizes[i]))
-            self.ni_temp = self.layer_sizes[i]  # maj taille entrée de la prochaine couche
-        encoder_layers.append(spdnet.ReEig())
+        for i in range(n_layers-1):
+            encoder_layers.append(spdnet.BiMap(self.ho, self.hi, self.layer_sizes[i],self.layer_sizes[i+1]))
+            encoder_layers.append(spdnet.ReEig())
         encoder_layers.append(spdnet.LogEig())
         
         self.encoder = nn.Sequential(*encoder_layers)
@@ -44,8 +44,6 @@ class Autoencoder_nlayers_SPDnet(nn.Module):
         for i in range(n_layers-1, 0, -1):
             decoder_layers.append(spdnet.BiMap(self.ho, self.hi, self.layer_sizes[i], self.layer_sizes[i-1]))
             decoder_layers.append(spdnet.ReEig())
-        decoder_layers.append(spdnet.BiMap(self.ho, self.hi, self.layer_sizes[0], self.ni))
-        decoder_layers.append(spdnet.ReEig())
         
         self.decoder = nn.Sequential(*decoder_layers)
 

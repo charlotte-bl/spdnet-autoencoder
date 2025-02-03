@@ -5,19 +5,26 @@ from data_preprocessing import NoisyCleanDataset,Dataset,add_gaussian_noise_to_c
 from scipy.stats import ortho_group
 from scipy.linalg import block_diag
 
-def generate_matrices(number_matrices, size_matrices, lower_bound=3, upper_bound=6):
+def generate_matrices(number_matrices=300, size_matrices=22, lambda_mean=3, mu_mean=6):
     X = torch.empty(0, size_matrices*2, size_matrices*2)
     U = torch.tensor(ortho_group.rvs(size_matrices)).float()
-    b_inf,b_sup = lower_bound, upper_bound
-    grid = torch.arange(b_inf,b_sup,(b_sup-b_inf)/size_matrices) #pas adapté pour être sur d'avoir une grid de size_matrices valeurs
-    for _ in range(number_matrices):
-        epsilon = torch.randn(size_matrices)*0.2
-        X_i = U.T@ torch.diag(grid+epsilon) @U #création matrice SDP en fonction de val propres grid+eps et matrice ortho U
-        X_i = (X_i.T + X_i) * 0.5 #symetrie
-        X_i_diag = block_diag(X_i.numpy(),X_i.numpy()) #matrice carré avec deux carré qui sont X_i placés en diag et 0 sinon
-        X_i_diag = X_i_diag / torch.linalg.matrix_norm(torch.from_numpy(X_i_diag)) #normalisation
-        X = torch.cat((X, X_i_diag.unsqueeze(0)), dim=0) #rajout de la matrice au dataset
-    return X
+    epsilon = torch.randn(size_matrices)*0.2
+    lambda_diag=torch.normal(mean=lambda_mean,std=epsilon, size=size_matrices)
+    return lambda_diag
+
+    #b_inf,b_sup = lower_bound, upper_bound
+    #grid = torch.arange(b_inf,b_sup,(b_sup-b_inf)/size_matrices) #pas adapté pour être sur d'avoir une grid de size_matrices valeurs
+    #for _ in range(number_matrices):
+    #    
+    #    X_i = U.T@ torch.diag(grid+epsilon) @U #création matrice SDP en fonction de val propres grid+eps et matrice ortho U
+    #    X_i = (X_i.T + X_i) * 0.5 #symetrie
+    #    X_i_diag = block_diag(X_i.numpy(),X_i.numpy()) #matrice carré avec deux carré qui sont X_i placés en diag et 0 sinon
+    #    X_i_diag = X_i_diag / torch.linalg.matrix_norm(torch.from_numpy(X_i_diag)) #normalisation
+    #    X = torch.cat((X, X_i_diag.unsqueeze(0)), dim=0) #rajout de la matrice au dataset
+    #return X
+
+def generate_classes():
+    pass
 
 
 def generate_synthetic_data(number_matrices=300,size_matrices=25,batch_size=32,noise="none"):
@@ -65,5 +72,5 @@ def generate_datasets(number_dataset=5):
         torch.save(test_loader, file_path_test)
 
 if __name__ == '__main__':
-    generate_datasets()
+    print(generate_matrices())
 

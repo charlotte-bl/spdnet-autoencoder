@@ -10,24 +10,20 @@ def show_first_image(image,show=False):
     if show:
         plt.show()
 
-def show_first_image_from_loader(image_from_loader,path,show=False,name=""):
+def show_first_image_from_loader(image_from_loader,path,name=""):
     image = image_from_loader.data[0].squeeze(0).numpy()
     plt.imshow(image,cmap='gray')
     print(path+name)
-    if show:
-        plt.show()
     if name!="":
         plt.savefig(path+name)
     plt.clf()
 
 
-def show_loss(list_train_loss,list_val_loss,path,show=False,name=""):
+def show_loss(list_train_loss,list_val_loss,path,name=""):
     plt.plot(list_train_loss,label="train")
     plt.plot(list_val_loss,label="val")
     plt.legend()
     print(path+name)
-    if show:
-        plt.show()
     if name!="":
         plt.savefig(path+name)
     plt.clf()
@@ -35,15 +31,15 @@ def show_loss(list_train_loss,list_val_loss,path,show=False,name=""):
 def show_metric_latent_dim():
     pass
 
-def show_latent_dim_2(class_right,class_left,show=False):
+def show_latent_dim_2(class_1,class_2,show=False):
     fig = go.Figure()
-    class_right = np.array(class_right)
-    class_left = np.array(class_left)
+    class_1 = np.array(class_1)
+    class_2 = np.array(class_2)
     fig = fig.add_trace(
             go.Scatter3d(
-                x=class_right[:, 0, 0, 0], # a
-                y=class_right[:, 0, 0, 1], # b
-                z=class_right[:, 0, 1, 1], # c
+                x=class_1[:, 0, 0, 0], # a
+                y=class_1[:, 0, 0, 1], # b
+                z=class_1[:, 0, 1, 1], # c
                 mode="markers",
                 name='right_hand',
                 marker=dict(size=8, color="pink", opacity=0.9),
@@ -51,9 +47,9 @@ def show_latent_dim_2(class_right,class_left,show=False):
         )
     fig = fig.add_trace(
             go.Scatter3d(
-                x=class_left[:, 0, 0, 0], # a
-                y=class_left[:, 0, 0, 1], # b
-                z=class_left[:, 0, 1, 1], # c
+                x=class_2[:, 0, 0, 0], # a
+                y=class_2[:, 0, 0, 1], # b
+                z=class_2[:, 0, 1, 1], # c
                 mode="markers",
                 name='left_hand',
                 marker=dict(size=8, color="green", opacity=0.9),
