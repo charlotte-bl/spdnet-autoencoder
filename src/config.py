@@ -17,4 +17,7 @@ models_information_latent_dim = "_latent-dim-"
 models_information_model_name = "model"
 models_information_model_extension = ".pth"
 
+#extension for other datas
+basic_extension = ".pt"
+
 

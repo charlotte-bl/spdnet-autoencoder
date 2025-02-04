@@ -62,7 +62,7 @@ def main():
 
     #test model
     #data_test,outputs_test,test_loss = test(test_loader,auto_encoder,criterion,noise=args.noise,show=args.show,class_1_name=labels[0])
-    data_test,outputs_test,test_loss = test(test_loader,auto_encoder,criterion,noise=args.noise,show=args.show,class_1_name="")
+    data_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,noise=args.noise,show=args.show,class_1_name="")
 
     #find folder name to save datas
     path = find_name_folder("../models",args.layers_type,args.layers,args.loss,args.noise,args.epochs,args.batch_size,args.latent_dim)
@@ -72,7 +72,7 @@ def main():
     save_model(auto_encoder,path)
 
     #save datas
-    save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,path,args.show)
+    save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,test_trustworthiness,path,args.show)
 
 if __name__ == '__main__':
     warnings.filterwarnings('ignore')

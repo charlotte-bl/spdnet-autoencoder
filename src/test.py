@@ -63,4 +63,4 @@ def test(test_loader,model,criterion,noise="none",show=False,class_1_name='left_
         show_latent_dim_2(class_1,class_2,show,class_1_name)
         
 
-    return data_test,outputs_test,test_loss
+    return data_test,outputs_test,test_loss,trustworthiness_recomp

@@ -44,7 +44,12 @@ def save_model(model,folder):
     path = f"{folder}{c.models_information_model_name}{c.models_information_model_extension}"
     torch.save(model.state_dict(), path)
 
-def save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,path,show=False):    
+def save_datas_from_model(array,path,name):
+    file=path+name+c.basic_extension
+    torch.save(array,file)
+
+def save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,test_trustworthiness,path,show=False):    
+    #save images
     show_first_image_from_loader(data_train,path,name="original_train")
     show_first_image_from_loader(outputs_train,path,name="reconstruction_train")
     show_first_image_from_loader(data_val,path,name="original_val")
@@ -52,6 +57,20 @@ def save_images_and_results(data_train,outputs_train,list_train_loss,data_val,ou
     show_first_image_from_loader(data_test,path,name="original_test")
     show_first_image_from_loader(outputs_test,path,name="reconstruction_test")
     show_loss(list_train_loss,list_val_loss,path,name="loss_progression")
+    #save datas format pt - pytorch
+    save_datas_from_model(data_train,path,name="data_train")
+    save_datas_from_model(outputs_train.detach(),path,name="outputs_train")
+    save_datas_from_model(list_train_loss,path,name="list_train_loss")
+
+    save_datas_from_model(data_val,path,name="data_val")
+    save_datas_from_model(outputs_val.detach(),path,name="outputs_val")
+    save_datas_from_model(list_val_loss,path,name="list_val_loss")
+
+    save_datas_from_model(data_test,path,name="data_test")
+    save_datas_from_model(outputs_test.detach(),path,name="outputs_test")
+
+    save_datas_from_model(test_loss,path,name="test_loss")
+    save_datas_from_model(test_trustworthiness,path,name="test_trustworthiness")
 
 def save_synthetic_data(train_loader,val_loader,test_loader,name="block_diag"):
     file_path_train,file_path_val,file_path_test = find_name_dataset(name=name)
