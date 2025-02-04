@@ -25,10 +25,10 @@ def test(test_loader,model,criterion,noise="none",show=False,class_1_name='left_
                 batch_test_loss += data_test_loss.item()/data_test.size(0)
                 if isinstance(criterion, torch.nn.MSELoss):
                     trustworthiness_recomp += trustworthiness(data_test,outputs_test,pairwise_distance=pairwise_euclidean_distances)
-                    trustworthiness_latent += trustworthiness(data_test,z,pairwise_distance=pairwise_euclidean_distances)
+                    #trustworthiness_latent += trustworthiness(data_test,z,pairwise_distance=pairwise_euclidean_distances) - on peut pas si ho diff hi car on compare ho channels à hi
                 else:
                     trustworthiness_recomp += trustworthiness(data_test,outputs_test)
-                    trustworthiness_latent += trustworthiness(data_test,z)
+                    #trustworthiness_latent += trustworthiness(data_test,z)
                 
     else:
         for data_test,labels in test_loader:
@@ -45,10 +45,10 @@ def test(test_loader,model,criterion,noise="none",show=False,class_1_name='left_
                 batch_test_loss += data_test_loss.item()/data_test.size(0)
                 if isinstance(criterion, torch.nn.MSELoss):
                     trustworthiness_recomp += trustworthiness(data_test,outputs_test,pairwise_distance=pairwise_euclidean_distances)
-                    trustworthiness_latent += trustworthiness(data_test,z,pairwise_distance=pairwise_euclidean_distances)
+                    #trustworthiness_latent += trustworthiness(data_test,z,pairwise_distance=pairwise_euclidean_distances)
                 else:
                     trustworthiness_recomp += trustworthiness(data_test,outputs_test)
-                    trustworthiness_latent += trustworthiness(data_test,z)
+                    #trustworthiness_latent += trustworthiness(data_test,z)
             
     test_loss = batch_test_loss/len(test_loader)
     trustworthiness_recomp = trustworthiness_recomp/len(test_loader)
@@ -56,11 +56,11 @@ def test(test_loader,model,criterion,noise="none",show=False,class_1_name='left_
     print("Test : ")
     print(f"| Perte : {test_loss}")
     print(f"| Trustworthiness origine/décodé : {trustworthiness_recomp}")
-    print(f"| Trustworthiness origine/encodé : {trustworthiness_latent}")
+    #print(f"| Trustworthiness origine/encodé : {trustworthiness_latent}")
 
     #affichage si matrice 2x2
     if z.shape[2]==2:
-        show_latent_dim_2(class_1,class_2,show)
+        show_latent_dim_2(class_1,class_2,show,class_1_name)
         
 
     return data_test,outputs_test,test_loss

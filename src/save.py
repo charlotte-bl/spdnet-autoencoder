@@ -1,9 +1,18 @@
 import torch
 import os
 from visualization import show_first_image_from_loader,show_loss
+import config as c
 
-def find_name_folder(folder,number_layers,loss,noise,epochs,batch_size,layers_type):
-    second_folder = "autoencoder_n-layers-"+str(number_layers)+"_loss-"+loss+"_noise-"+noise+"_n-epochs-"+str(epochs)+"_batch-size-"+str(batch_size)+"_layers-type-"+layers_type
+def find_name_folder(folder,layers_type,number_layers,loss,noise,epochs,batch_size,latent_dim):
+    second_folder = c.models_information_base_name
+    second_folder += f"{c.models_information_model}{layers_type}"
+    if layers_type!="one_layer":
+        second_folder += f"{c.models_information_n_layers}{number_layers}"
+    second_folder += f"{c.models_information_loss}{loss}"
+    second_folder += f"{c.models_information_noise}{noise}"
+    second_folder += f"{c.models_information_n_epochs}{epochs}"
+    second_folder += f"{c.models_information_batch_size}{batch_size}"
+    second_folder += f"{c.models_information_latent_dim}{latent_dim}"    
     index=1
     while True:
         new_second_folder = f"{second_folder}_{index:02d}/"
@@ -14,12 +23,12 @@ def find_name_folder(folder,number_layers,loss,noise,epochs,batch_size,layers_ty
 
 def find_name_dataset(name="block_diag"):
     index=1
-    folder = "../data"
-    name = "synthetic-data_"+name+"-loader_"
+    folder = c.synthetic_data_folder
+    name = c.synthetic_data_base_name+name+"_"
     name_train = name+"train"
     name_val = name+"val"
     name_test = name+"test"
-    extension = ".pt"
+    extension = c.synthetic_data_extension
     while True:
         new_name_train = f"{name_train}_{index:02d}{extension}"
         new_name_val = f"{name_val}_{index:02d}{extension}"
@@ -32,7 +41,7 @@ def find_name_dataset(name="block_diag"):
         index = index+1
 
 def save_model(model,folder):
-    path = f"{folder}/model.pth"
+    path = f"{folder}{c.models_information_model_name}{c.models_information_model_extension}"
     torch.save(model.state_dict(), path)
 
 def save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,path,show=False):    
@@ -51,5 +60,5 @@ def save_synthetic_data(train_loader,val_loader,test_loader,name="block_diag"):
     torch.save(test_loader, file_path_test)
 
 if __name__ == '__main__':
-    path = find_name_folder("/models",3,'riemann','none',5,16)
+    path = find_name_folder("/models","one_layer",3,'riemann','none',5,16,2)
     print(path)

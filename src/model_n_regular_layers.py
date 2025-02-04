@@ -50,7 +50,7 @@ class Autoencoder_nlayers_regular_SPDnet(nn.Module):
     def forward(self, x):
         latent = self.encoder(x)
         reconstruction = self.decoder(latent)
-        return reconstruction.double()
+        return reconstruction
 
     def get_spd_parameters(self):
         return [self.other_param]

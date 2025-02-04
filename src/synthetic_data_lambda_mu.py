@@ -6,6 +6,8 @@ from scipy.stats import ortho_group
 from scipy.linalg import block_diag
 import numpy as np
 
+from visualization import show_first_image_from_loader
+
 def generate_matrices(number_matrices=300, size_matrices=22, lambda_mean=3, mu_mean=6):
     X_sigma_plus = torch.empty(0, size_matrices*2, size_matrices*2)
     X_sigma_minus = torch.empty(0, size_matrices*2, size_matrices*2)
@@ -35,7 +37,7 @@ def generate_matrices(number_matrices=300, size_matrices=22, lambda_mean=3, mu_m
         sigma_minus_diag = torch.from_numpy(block_diag(X_i_mu.numpy(),X_i_lambda.numpy())) #matrice carré avec deux carré en diag, 0 sinon
         X_sigma_minus = torch.cat((X_sigma_minus, sigma_minus_diag.unsqueeze(0)), dim=0)
     
-    return X_sigma_plus.unsqueeze(dim=1),X_sigma_minus.unsqueeze(dim=1) # on rajoute le channel
+    return X_sigma_plus.unsqueeze(dim=1).double(),X_sigma_minus.unsqueeze(dim=1).double() # on rajoute le channel
 
 def generate_dataset(X_sigma_plus,X_sigma_minus):
     labels_sigma_plus = np.repeat(['sigma_plus'], X_sigma_plus.shape[0])
@@ -53,4 +55,4 @@ def generate_datasets(number_dataset=5):
         save_synthetic_data(train_loader, val_loader, test_loader,name="lambda_mu")
 
 if __name__ == '__main__':
-    generate_datasets()
+    generate_datasets(number_dataset=1)

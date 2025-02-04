@@ -3,6 +3,7 @@ from pyriemann.estimation import Covariances
 import moabb
 from moabb.datasets import BNCI2014_001 # On s'interesse à ce dataset par exemple pour l'instant, il en existe pleins d'autres (cf site de MOABB)
 from moabb.paradigms import FilterBankLeftRightImagery
+import config as c
 
 # functions for noise
 def add_gaussian_noise_to_covariances(cov):
@@ -69,15 +70,18 @@ class LabeledDataset(torch.utils.data.Dataset):
         label = self.label[idx]
         return data,label
 
-# preprocessing for raw datas (such as BCI)
 
-def raw_to_cov(raw_data):
-    """
-    Transform raw data to covarainces data
-    :param raw_data: raw_data of shape (number_matrices, number_captors, number_data_by_captors) 
-    :return: cova
-    """
-    return torch.from_numpy(Covariances(estimator='scm').fit_transform(raw_data)).unsqueeze(1)
+#load data
+
+def load_preprocess_synthetic_data(index,name):
+    path=c.synthetic_data_folder+c.synthetic_data_base_name+name
+    path_train=f"{path}_train_{index:02d}{c.synthetic_data_extension}"
+    path_val=f"{path}_val_{index:02d}{c.synthetic_data_extension}"
+    path_test=f"{path}_test_{index:02d}{c.synthetic_data_extension}"
+    train_loader = torch.load(path_train)
+    val_loader = torch.load(path_val)
+    test_loader = torch.load(path_test)
+    return train_loader,val_loader,test_loader
 
 def load_data_BCI():
     paradigm = FilterBankLeftRightImagery(filters =[[7,35]])
@@ -91,6 +95,17 @@ def train_test_split_BCI(X,labels):
     X_train,labels_train = X[:144],labels[144:]
     X_test,labels_test = X[144:],labels[144:]
     return X_train,labels_train,X_test,labels_test
+
+
+# preprocessing for raw datas (such as BCI)
+
+def raw_to_cov(raw_data):
+    """
+    Transform raw data to covarainces data
+    :param raw_data: raw_data of shape (number_matrices, number_captors, number_data_by_captors) 
+    :return: cova
+    """
+    return torch.from_numpy(Covariances(estimator='scm').fit_transform(raw_data)).unsqueeze(1)
 
 def preprocess_data_cov_no_labels(X,batch_size,noise):
     if noise=="salt_pepper":
@@ -109,7 +124,7 @@ def preprocess_data_cov_no_labels(X,batch_size,noise):
 
 def preprocess_data_raw_no_labels(X_raw,batch_size,noise):
     cov = raw_to_cov(X_raw)
-    return preprocess_data_cov_no_labels(cov,labels,batch_size,noise)
+    return preprocess_data_cov_no_labels(cov,batch_size,noise)
 
 def preprocess_data_cov(X,labels,batch_size,noise):
     #add noise if needed
@@ -163,5 +178,7 @@ def preprocess_data_BCI(X,labels,batch_size,noise):
     return train_loader, val_loader, test_loader
 
 if __name__ == '__main__':
-    X,labels = load_data_BCI()
-    train_test_split_BCI(X,labels)
+    #X,labels = load_data_BCI()
+    #train_test_split_BCI(X,labels)
+    train_loader,val_loader,test_loader = load_preprocess_synthetic_data(1,"lambda_mu")
+    print(len(train_loader))
