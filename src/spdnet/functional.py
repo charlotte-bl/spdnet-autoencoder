@@ -14,11 +14,11 @@ def init_bimap_parameter(W):
         for j in range(hi):
             if ni == no:
                 W.data[i, j] = th.eye(ni, no, dtype=W.dtype, device=W.device)
-            if ni<no: #augmentation de dimension pour retourner dans l'espace initial
+            elif ni<no: #augmentation de dimension pour retourner dans l'espace initial
                 v = th.empty(no, no, dtype=W.dtype, device=W.device).uniform_(0., 1.)
                 u, s, v_t = th.svd(v.matmul(v.t()))
                 W.data[i, j] = v_t.t()[:ni, :]
-            if no<ni: #reduction de dimension pour aller dans l'espace latent
+            else:  #cas no<ni - reduction de dimension pour aller dans l'espace latent
                 v=th.empty(ni,ni,dtype=W.dtype,device=W.device).uniform_(0.,1.)
                 vv=th.svd(v.matmul(v.t()))[0][:,:no]
                 W.data[i,j]=vv

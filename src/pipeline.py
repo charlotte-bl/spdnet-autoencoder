@@ -1,63 +1,80 @@
 #pipeline.py
 
-import json
-import argparse
-from data_preprocessing import preprocess_data,load_data
-from model import Autoencoder_SPDnet
-from model_n_layers import Autoencoder_nlayers_SPDnet
+import warnings
+import os
+import torch
+
+from parsing import parsing_pipeline
+from data_preprocessing import preprocess_data_BCI,load_data_BCI,load_preprocess_synthetic_data,get_size_matrix_from_loader
+
+from models import Autoencoder_test_SPDnet, Autoencoder_nlayers_regular_SPDnet, Autoencoder_layers_byhalf_SPDnet, Autoencoder_one_layer_SPDnet
+
+from pyriemann.classification import MDM
+from spdnet.loss import RiemannianDistanceLoss
 from train import train
 from test import test
+from save import find_name_folder
 from save import save_model
-from save import save_data
-from spdnet.loss import RiemannianDistanceLoss
-import torch
-from pyriemann.classification import MDM
-import warnings
+from save import save_images_and_results
+
 
 def main():
-    #load config
-    parser = argparse.ArgumentParser(description='Train model')
-    #parser.add_argument('dataset')
-    parser.add_argument('-e', '--epochs', type=int , default = 5, help='Number of epochs for the training')
-    parser.add_argument('-b','--batch_size', type=int , default = 32, help='Size of the batch for train/val/test')
-    parser.add_argument('-r','--learning_rate', type=int , default = 0.01, help='Learning rate for the training')
-    parser.add_argument('-d','--latent_dim', type=int , default = 2, help='Latent dimension of the autoencoder')
-    parser.add_argument('-x', '--xp', type=int , default = 1, help='How many times the experience is repeated')
-    parser.add_argument('-c', '--layers', type=int , default = 3, help='How many layers the model have')
-    parser.add_argument('-n','--noise', default = 'none', help='Type of noise for the denoising. none if there is no noise.', choices=['none', 'gaussian', 'salt_pepper','masking'])
-    parser.add_argument('-l','--loss', default = 'riemann', help='Loss. It can be riemannian or euclidean.', choices = ['euclidean','riemann'])
-    parser.add_argument('-s', '--show', default=False,action='store_true')
-    args = parser.parse_args()
-    #stored in : args.epochs, args.batch_size, args.learning_rate, args.latent_dim, args.noise , args.loss
-
-    #load data
-    X,labels = load_data()
-
-    #preprocess data
-    train_loader, val_loader, test_loader = preprocess_data(X,labels,batch_size=args.batch_size,noise=args.noise)
+    args = parsing_pipeline()
+    
+    #load data and preprocess data
+    if args.data=="bci":
+        X,labels = load_data_BCI()
+        train_loader, val_loader, test_loader = preprocess_data_BCI(X,labels,batch_size=args.batch_size,noise=args.noise)
+        ho, hi, ni, no = args.latent_channel,1,X.data.shape[1],args.latent_dim
+    else:
+        train_loader, val_loader, test_loader = load_preprocess_synthetic_data(args.index,args.synthetic_generation)
+        ho, hi, ni, no = args.latent_channel,1,get_size_matrix_from_loader(train_loader),args.latent_dim
 
     #load model
-    ho, hi, ni, no = 1,1,X.data.shape[1],args.latent_dim
-    auto_encoder = Autoencoder_nlayers_SPDnet(ho, hi, ni, no,args.layers)
+    if args.layers_type == 'regular':
+        auto_encoder = Autoencoder_nlayers_regular_SPDnet(ho, hi, ni, no,args.layers)
+    elif args.layers_type == 'by_halves':
+        auto_encoder = Autoencoder_layers_byhalf_SPDnet(ho, hi, ni, no)
+    else:
+        auto_encoder = Autoencoder_one_layer_SPDnet(ho, hi, ni, no)
+    
+    #loss
     if args.loss == 'riemann':
         criterion = RiemannianDistanceLoss()
-        mdm = MDM()
     else:
         criterion = torch.nn.MSELoss()
-        mdm = MDM(metric="euclid")
 
     #train model
-    data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss = train(train_loader,val_loader,auto_encoder,args.epochs,criterion,noise=args.noise)
+    data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss = train(train_loader,val_loader,auto_encoder,args.epochs,criterion)
 
     #test model
-    data_test,outputs_test,test_loss = test(test_loader,auto_encoder,criterion,noise=args.noise,show=args.show)
+    if args.data=="bci":
+        data_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,show=args.show,class_1_name=labels[0])
+    else:
+        data_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,show=args.show,class_1_name="")
 
+    #find folder name to save datas
+    path = find_name_folder("../models",
+                            args.epochs,
+                            args.latent_dim,
+                            args.latent_channel,
+                            args.loss,
+                            args.layers_type,
+                            args.data,
+                            args.synthetic_generation,
+                            args.index,
+                            args.layers,
+                            args.batch_size,
+                            args.noise)
+    
+    os.mkdir(path)
+    
     #save_model
-    save_model(auto_encoder,args.layers,args.loss,args.noise,args.epochs,args.batch_size)
+    save_model(auto_encoder,path)
 
     #save datas
-    save_data(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,args.show)
+    save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,test_trustworthiness,path,args.show)
 
 if __name__ == '__main__':
-    #warnings.filterwarnings('ignore')
+    warnings.filterwarnings('ignore')
     main()
