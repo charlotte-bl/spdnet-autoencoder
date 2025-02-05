@@ -73,6 +73,11 @@ class LabeledDataset(torch.utils.data.Dataset):
 
 #load data
 
+def get_size_matrix_from_loader(loader):
+    data, _ = next(iter(loader))
+    input_size = data.shape
+    return input_size[2]
+
 def load_preprocess_synthetic_data(index,name):
     path=c.synthetic_data_folder+c.synthetic_data_base_name+name
     path_train=f"{path}_train_{index:02d}{c.synthetic_data_extension}"
@@ -180,5 +185,6 @@ def preprocess_data_BCI(X,labels,batch_size,noise):
 if __name__ == '__main__':
     #X,labels = load_data_BCI()
     #train_test_split_BCI(X,labels)
-    train_loader,val_loader,test_loader = load_preprocess_synthetic_data(1,"lambda_mu")
-    print(len(train_loader))
+    train_loader,val_loader,test_loader = load_preprocess_synthetic_data(1,"block_diag")
+    #print(len(train_loader))
+    print(get_size_matrix_from_loader(train_loader))

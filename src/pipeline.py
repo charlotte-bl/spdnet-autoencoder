@@ -4,7 +4,7 @@ import warnings
 import os
 import argparse
 import torch
-from data_preprocessing import preprocess_data_BCI,load_data_BCI,load_preprocess_synthetic_data
+from data_preprocessing import preprocess_data_BCI,load_data_BCI,load_preprocess_synthetic_data,get_size_matrix_from_loader
 from model_test import Autoencoder_test_SPDnet
 from model_n_regular_layers import Autoencoder_nlayers_regular_SPDnet
 from model_n_div2_layers import Autoencoder_layers_byhalf_SPDnet
@@ -25,6 +25,7 @@ def main():
     parser.add_argument('-b','--batch_size', type=int , default = 32, help='Size of the batch for train/val/test')
     parser.add_argument('-r','--learning_rate', type=int , default = 0.01, help='Learning rate for the training')
     parser.add_argument('-d','--latent_dim', type=int , default = 2, help='Latent dimension of the autoencoder')
+    parser.add_argument('-o','--latent_channel', type=int , default = 1, help='Latent channel of the autoencoder')
     parser.add_argument('-x', '--xp', type=int , default = 1, help='How many times the experience is repeated')
     parser.add_argument('-m', '--layers_type',default='one_layer', help = 'How layers are implemented. Regular means layers are regular between input channels and output channels. By_halves means layers are reduced by half until no. If a layer is in dimension<10x10, then it is directly going to no.', choices = ['regular','by_halves','one_layer'])
     parser.add_argument('-c', '--layers', type=int , default = 1, help='How many layers the model have')
@@ -52,10 +53,10 @@ def main():
     if args.data=="bci":
         X,labels = load_data_BCI()
         train_loader, val_loader, test_loader = preprocess_data_BCI(X,labels,batch_size=args.batch_size,noise=args.noise)
-        ho, hi, ni, no = 2,1,X.data.shape[1],args.latent_dim
+        ho, hi, ni, no = args.latent_channel,1,X.data.shape[1],args.latent_dim
     else:
         train_loader, val_loader, test_loader = load_preprocess_synthetic_data(args.index,args.synthetic_generation)
-        ho, hi, ni, no = 2,1,8*2,args.latent_dim
+        ho, hi, ni, no = args.latent_channel,1,get_size_matrix_from_loader(train_loader),args.latent_dim
 
     #load model
     if args.layers_type == 'regular':
