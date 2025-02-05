@@ -16,11 +16,11 @@ from test import test
 from save import find_name_folder
 from save import save_model
 from save import save_images_and_results
+import sys
 
 def main():
-    #load config
+    #load parsing argument
     parser = argparse.ArgumentParser(description='Train model')
-    #parser.add_argument('dataset')
     parser.add_argument('-e', '--epochs', type=int , default = 5, help='Number of epochs for the training')
     parser.add_argument('-b','--batch_size', type=int , default = 32, help='Size of the batch for train/val/test')
     parser.add_argument('-r','--learning_rate', type=int , default = 0.01, help='Learning rate for the training')
@@ -31,19 +31,33 @@ def main():
     parser.add_argument('-n','--noise', default = 'none', help='Type of noise for the denoising. none if there is no noise.', choices=['none', 'gaussian', 'salt_pepper','masking'])
     parser.add_argument('-l','--loss', default = 'riemann', help='Loss. It can be riemannian or euclidean.', choices = ['euclidean','riemann'])
     parser.add_argument('-s', '--show', default=False,action='store_true')
-    parser.add_argument('-j', '--data', default='BCI', help ="Datas to train and test the autoencoder with.")
+    parser.add_argument('-j', '--data', default='synthetic', help ="Datas to train and test the autoencoder with.", choices = ['bci','synthetic'])
+    parser.add_argument('-t', '--synthetic_generation', default='block_diag', help ="Which generation method to use for the model", choices = ['block_diag','lambda_mu'])
+    parser.add_argument('-i', '--index', default='1', type=int, help ="Index of the synthetic data")
     args = parser.parse_args()
-    #stored in : args.epochs, args.batch_size, args.learning_rate, args.latent_dim, args.noise , args.loss, args.layers_type, args.data
+    #errors for dependencies
+    if args.layers_type=="regular" and args.layers<=1:
+        parser.error("--layers has to be greater than 1 for the layers to be with a regular step")
+    if args.layers_type=="one_layer" and "--layers" in sys.argv:
+        parser.error("--layers has to be unspecified for the model to have only one layer. layers type is currently 'one_layer'")
+    if args.layers_type=="by_halves" and "--layers" in sys.argv:
+        parser.error("--layers has to be unspecified for the model to cut dimension by halves at each layers")
+    if args.data=="bci" and "--index" in sys.argv:
+        parser.error("--index has to be unspecified for the program to load the BCI dataset")
+    if args.data=="bci" and "--synthetic_generation" in sys.argv:
+        parser.error("--synthetic_generation has to be unspecified for the program to load the BCI dataset")
+
 
     #load data and preprocess data
-    # X,labels = load_data_BCI()
-    # train_loader, val_loader, test_loader = preprocess_data_BCI(X,labels,batch_size=args.batch_size,noise=args.noise)
-
-    train_loader, val_loader, test_loader = load_preprocess_synthetic_data(1,"block_diag")
+    if args.data=="bci":
+        X,labels = load_data_BCI()
+        train_loader, val_loader, test_loader = preprocess_data_BCI(X,labels,batch_size=args.batch_size,noise=args.noise)
+        ho, hi, ni, no = 2,1,X.data.shape[1],args.latent_dim
+    else:
+        train_loader, val_loader, test_loader = load_preprocess_synthetic_data(args.index,args.synthetic_generation)
+        ho, hi, ni, no = 2,1,8*2,args.latent_dim
 
     #load model
-    #ho, hi, ni, no = 2,1,X.data.shape[1],args.latent_dim
-    ho, hi, ni, no = 2,1,8*2,args.latent_dim
     if args.layers_type == 'regular':
         auto_encoder = Autoencoder_nlayers_regular_SPDnet(ho, hi, ni, no,args.layers)
     elif args.layers_type == 'by_halves':
