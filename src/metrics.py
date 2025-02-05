@@ -19,7 +19,6 @@ def pairwise_euclidean_distances(batch):
             dist_matrix[i,j] = torch.norm(batch[i] - batch[j],p='fro') #distances entre matrice i du batch vs matrice j du batch
     return dist_matrix
 
-
 def diag_inf(dist_matrix):
     dist_matrix.fill_diagonal_(float('inf'))
     return dist_matrix

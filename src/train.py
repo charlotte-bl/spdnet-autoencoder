@@ -1,19 +1,20 @@
 from spdnet.optimizers import RiemannianAdam
 import torch
 from tqdm import tqdm
+from data_preprocessing import is_data_with_noise
 
-def train(train_loader,val_loader,model,n_epochs,criterion,noise="none"):
+def train(train_loader,val_loader,model,n_epochs,criterion):
     optimizer = RiemannianAdam(model.parameters(), lr=0.001)  #optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
     list_train_loss = []
     list_val_loss = []
+    noised = is_data_with_noise(train_loader)
     for epoch in range(n_epochs):
         #initialization
         batch_train_loss = 0.0
         batch_val_loss = 0.0
-
         #train step
         model.train()
-        if noise!="none":
+        if noised:
             for noisy_train, data_train,_ in train_loader: #for data_train,_ in tqdm(train_loader):
                 outputs_train = model(noisy_train)
                 data_train_loss = criterion(outputs_train, data_train)
@@ -32,7 +33,7 @@ def train(train_loader,val_loader,model,n_epochs,criterion,noise="none"):
 
         #validation step
         model.eval()
-        if noise!="none":
+        if noised:
              for noisy_val, data_val ,_ in val_loader:
                 with torch.no_grad():
                         outputs_val = model(noisy_val)

@@ -1,6 +1,5 @@
 import torch
 from pyriemann.estimation import Covariances
-import moabb
 from moabb.datasets import BNCI2014_001 # On s'interesse à ce dataset par exemple pour l'instant, il en existe pleins d'autres (cf site de MOABB)
 from moabb.paradigms import FilterBankLeftRightImagery
 import config as c
@@ -70,13 +69,18 @@ class LabeledDataset(torch.utils.data.Dataset):
         label = self.label[idx]
         return data,label
 
-
-#load data
+#functional
 
 def get_size_matrix_from_loader(loader):
     data, _ = next(iter(loader))
     input_size = data.shape
     return input_size[2]
+
+def is_data_with_noise(loader):
+    first_batch = next(iter(loader))
+    return len(first_batch)==3
+
+#load data
 
 def load_preprocess_synthetic_data(index,name):
     path=c.synthetic_data_folder+c.synthetic_data_base_name+name
@@ -100,7 +104,6 @@ def train_test_split_BCI(X,labels):
     X_train,labels_train = X[:144],labels[144:]
     X_test,labels_test = X[144:],labels[144:]
     return X_train,labels_train,X_test,labels_test
-
 
 # preprocessing for raw datas (such as BCI)
 
@@ -188,3 +191,4 @@ if __name__ == '__main__':
     train_loader,val_loader,test_loader = load_preprocess_synthetic_data(1,"block_diag")
     #print(len(train_loader))
     print(get_size_matrix_from_loader(train_loader))
+    print(is_data_with_noise(train_loader))

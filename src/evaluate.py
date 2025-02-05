@@ -1,5 +1,4 @@
 import torch
-from visualization import show_first_image
 import matplotlib.pyplot as plt
 
 def load_data_from_torch(path,name):
