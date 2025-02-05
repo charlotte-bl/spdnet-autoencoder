@@ -4,7 +4,7 @@ import warnings
 import os
 import torch
 
-from parsing import parsing
+from parsing import parsing_pipeline
 from data_preprocessing import preprocess_data_BCI,load_data_BCI,load_preprocess_synthetic_data,get_size_matrix_from_loader
 
 from models import Autoencoder_test_SPDnet, Autoencoder_nlayers_regular_SPDnet, Autoencoder_layers_byhalf_SPDnet, Autoencoder_one_layer_SPDnet
@@ -19,7 +19,7 @@ from save import save_images_and_results
 
 
 def main():
-    args = parsing()
+    args = parsing_pipeline()
     
     #load data and preprocess data
     if args.data=="bci":

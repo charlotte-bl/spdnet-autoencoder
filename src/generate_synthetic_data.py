@@ -6,7 +6,7 @@ from scipy.stats import ortho_group
 from scipy.linalg import block_diag
 import numpy as np
 import torch
-import argparse
+from parsing import parsing_generation_data
 
 # generation data based with one class
 
@@ -28,20 +28,19 @@ def generate_dataset_block_diag(X):
     labels = np.repeat(['unique_class'], X.shape[0])
     return X,labels
 
-def generate_synthetic_data_block_diag(number_matrices=300,size_matrices=25,batch_size=32,noise="none"):
+def generate_synthetic_data_block_diag(number_matrices,size_matrices,batch_size,noise):
     X = generate_matrices_block_diag(number_matrices=number_matrices, size_matrices=size_matrices)
     dataset,labels = generate_dataset_block_diag(X)
-    #add noise if needed : not implemented
     return preprocess_data_cov(dataset,labels,batch_size,noise)
 
-def generate_datasets_block_diag(number_dataset=5):
+def generate_datasets_block_diag(number_dataset,number_matrices,size_matrices,batch_size,noise):
     for _ in range(number_dataset):
-        train_loader, val_loader, test_loader = generate_synthetic_data_block_diag(size_matrices=8)
+        train_loader, val_loader, test_loader = generate_synthetic_data_block_diag(number_matrices=number_matrices,size_matrices=size_matrices,batch_size=batch_size,noise=noise)
         save_synthetic_data(train_loader, val_loader, test_loader,name="block_diag")
 
 # generation data based on lambda and mu
 
-def generate_matrices_lambda_mu(number_matrices=300, size_matrices=22, lambda_mean=3, mu_mean=6):
+def generate_matrices_lambda_mu(number_matrices, size_matrices, lambda_mean=3, mu_mean=6):
     X_sigma_plus = torch.empty(0, size_matrices*2, size_matrices*2)
     X_sigma_minus = torch.empty(0, size_matrices*2, size_matrices*2)
     U = torch.tensor(ortho_group.rvs(size_matrices)).float()
@@ -71,28 +70,24 @@ def generate_dataset_lambda_mu(X_sigma_plus,X_sigma_minus):
     labels_sigma_minus = np.repeat(['sigma_minus'], X_sigma_minus.shape[0])
     return torch.cat((X_sigma_plus,X_sigma_minus)),np.concatenate((labels_sigma_plus,labels_sigma_minus))
 
-def generate_synthetic_data_lambda_mu(number_matrices=300,size_matrices=25,batch_size=32,noise="none"):
+def generate_synthetic_data_lambda_mu(number_matrices,size_matrices,batch_size,noise):
     X_sigma_plus,X_sigma_minus = generate_matrices_lambda_mu(number_matrices=number_matrices, size_matrices=size_matrices)
     dataset,labels = generate_dataset_lambda_mu(X_sigma_plus,X_sigma_minus)
     return preprocess_data_cov(dataset,labels,batch_size,noise)
 
-def generate_datasets_lambda_mu(number_dataset=5):
+def generate_datasets_lambda_mu(number_dataset,number_matrices,size_matrices,batch_size,noise):
     for _ in range(number_dataset):
-        train_loader, val_loader, test_loader = generate_synthetic_data_lambda_mu()
+        train_loader, val_loader, test_loader = generate_synthetic_data_lambda_mu(number_matrices=number_matrices,size_matrices=size_matrices,batch_size=batch_size,noise=noise)
         save_synthetic_data(train_loader, val_loader, test_loader,name="lambda_mu")
 
 # generation of datasets
 
 def main():
-    parser = argparse.ArgumentParser(description='Data generation')
-    parser.add_argument('-n', '--n_datasets', type=int , default = 1, help='Number of dataset you want to generate')
-    parser.add_argument('-t', '--synthetic_generation', default='block_diag', help ="Which generation method to use for the model", choices = ['block_diag','lambda_mu'])
-    
-    args = parser.parse_args()
+    args=parsing_generation_data()
     if args.synthetic_generation == "lambda_mu":
-        generate_datasets_lambda_mu(number_dataset=args.n_datasets)
+        generate_datasets_lambda_mu(number_dataset=args.number_dataset,number_matrices=args.number_matrices,size_matrices=args.size_block_matrices,batch_size=args.batch_size,noise=args.noise)
     else:
-        generate_datasets_block_diag(number_dataset=args.n_datasets)
+        generate_datasets_block_diag(number_dataset=args.number_dataset,number_matrices=args.number_matrices,size_matrices=args.size_block_matrices,batch_size=args.batch_size,noise=args.noise)
 
 if __name__ == '__main__':
     main()
