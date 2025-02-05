@@ -12,13 +12,13 @@ def parsing_pipeline():
     parser.add_argument('-o','--latent_channel', type=int , default = 1, help='Latent channel of the autoencoder')
     parser.add_argument('-l','--loss', default = 'riemann', help='Loss. It can be riemannian or euclidean.', choices = ['euclidean','riemann'])
     parser.add_argument('-m', '--layers_type',default='one_layer', help = 'How layers are implemented. Regular means layers are regular between input channels and output channels. By_halves means layers are reduced by half until no. If a layer is in dimension<10x10, then it is directly going to no.', choices = ['regular','by_halves','one_layer'])
-    parser.add_argument('-c', '--layers', type=int , default = 1, help='How many layers the model have')
     
     #visualization parameter
     parser.add_argument('-s', '--show', default=False,action='store_true')
 
     #datas and related arguments
     parser.add_argument('-j', '--data', default='synthetic', help ="Datas to train and test the autoencoder with.", choices = ['bci','synthetic'])
+    parser.add_argument('-c', '--layers', type=int , default = 1, help='How many layers the model have. Only for the regular layers_type.')
     parser.add_argument('-b','--batch_size', type=int , default = 32, help='Size of the batch for train/val/test')
     parser.add_argument('-t', '--synthetic_generation', default='block_diag', help ="Which generation method to use for the model", choices = ['block_diag','lambda_mu'])
     parser.add_argument('-i', '--index', default='1', type=int, help ="Index of the synthetic data")
@@ -47,7 +47,7 @@ def parsing_pipeline():
 def parsing_generation_data():
     parser = argparse.ArgumentParser(description='Data generation')
     parser.add_argument('-t', '--synthetic_generation', default='block_diag', help ="Which generation method to use for the model", choices = ['block_diag','lambda_mu'])
-    parser.add_argument('-n', '--number_dataset', type=int , default = 1, help='Number of dataset you want to generate')
+    parser.add_argument('-d', '--number_dataset', type=int , default = 1, help='Number of dataset you want to generate')
     parser.add_argument('-b','--batch_size', type=int , default = 32, help='Size of the batch for train/val/test')
     parser.add_argument('-s','--size_block_matrices', type=int , default = 8, help='Size of the block matrices you want to have. Beware that the effective size of the matrix will be twice this value, since we have two blocks.')
     parser.add_argument('-n','--noise', default = 'none', help='Type of noise for the denoising. none if there is no noise.', choices=['none', 'gaussian', 'salt_pepper','masking'])

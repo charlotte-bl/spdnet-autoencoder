@@ -71,14 +71,18 @@ class LabeledDataset(torch.utils.data.Dataset):
 
 #functional
 
-def get_size_matrix_from_loader(loader):
-    data, _ = next(iter(loader))
-    input_size = data.shape
-    return input_size[2]
-
 def is_data_with_noise(loader):
     first_batch = next(iter(loader))
     return len(first_batch)==3
+
+def get_size_matrix_from_loader(loader):
+    if is_data_with_noise(loader):
+        data, _ , _= next(iter(loader))
+        input_size = data.shape
+    else :
+        data, _ = next(iter(loader))
+        input_size = data.shape
+    return input_size[2]
 
 #load data
 

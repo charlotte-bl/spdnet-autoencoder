@@ -3,16 +3,25 @@ import os
 from visualization import show_first_image_from_loader,show_loss
 import config as c
 
-def find_name_folder(folder,layers_type,number_layers,loss,noise,epochs,batch_size,latent_dim):
+def find_name_folder(folder,epochs,latent_dim,latent_channel,loss,layers_type,data,synthetic_generation,index,number_layers,batch_size,noise):
+
     second_folder = c.models_information_base_name
-    second_folder += f"{c.models_information_model}{layers_type}"
-    if layers_type!="one_layer":
-        second_folder += f"{c.models_information_n_layers}{number_layers}"
-    second_folder += f"{c.models_information_loss}{loss}"
-    second_folder += f"{c.models_information_noise}{noise}"
+
     second_folder += f"{c.models_information_n_epochs}{epochs}"
-    second_folder += f"{c.models_information_batch_size}{batch_size}"
-    second_folder += f"{c.models_information_latent_dim}{latent_dim}"    
+    second_folder += f"{c.models_information_latent_dim}{latent_dim}"
+    second_folder += f"{c.models_information_latent_channel}{latent_channel}"
+    second_folder += f"{c.models_information_loss}{loss}"
+    second_folder += f"{c.models_information_layers_type}{layers_type}"
+    second_folder += f"{c.models_information_data}{data}"
+    if data=="synthetic":
+        second_folder += f"{c.models_information_synthetic_generation}{synthetic_generation}"
+        second_folder += f"{c.models_information_index}{index}"
+    if layers_type=="regular":
+        second_folder += f"{c.models_information_n_layers}{number_layers}"
+    if data=="bci":
+        second_folder += f"{c.models_information_batch_size}{batch_size}"
+        second_folder += f"{c.models_information_noise}{noise}"
+        
     index=1
     while True:
         new_second_folder = f"{second_folder}_{index:02d}/"

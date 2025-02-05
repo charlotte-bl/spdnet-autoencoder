@@ -54,7 +54,19 @@ def main():
         data_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,show=args.show,class_1_name="")
 
     #find folder name to save datas
-    path = find_name_folder("../models",args.layers_type,args.layers,args.loss,args.noise,args.epochs,args.batch_size,args.latent_dim)
+    path = find_name_folder("../models",
+                            args.epochs,
+                            args.latent_dim,
+                            args.latent_channel,
+                            args.loss,
+                            args.layers_type,
+                            args.data,
+                            args.synthetic_generation,
+                            args.index,
+                            args.layers,
+                            args.batch_size,
+                            args.noise)
+    
     os.mkdir(path)
     
     #save_model
