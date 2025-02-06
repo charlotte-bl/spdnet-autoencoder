@@ -9,14 +9,14 @@ def load_data_from_torch(path,name):
     data = torch.load(path+name,weights_only=True)
     return data
 
-def compare_latent_dim_influence():
+def compare_encoding_dim_influence():
     folder = c.models_information_folder
     folder_results = find_result_path()
     os.mkdir(folder_results)
 
     #fixed parameters of the model
     epochs = 50
-    channels_out = 1
+    channels_out = 2
     loss_type = "riemann"
     layers_type = "one_layer"
     data = "synthetic"
@@ -26,15 +26,15 @@ def compare_latent_dim_influence():
     noise=""
 
     #parameters of the pipeline
-    latent_dims= [2, 4, 6, 8, 10, 12, 14, 16]
-    nb_xp = 5
+    encoding_dims= [2, 4, 6, 8, 10, 12, 14, 16]
+    nb_xp = 2
     nb_datasets = 5
 
     #where to keep the data
 
-    dimension_losses = {dim:[] for dim in latent_dims}
-    dimension_trustworthiness = {dim:[] for dim in latent_dims}
-    for dim in latent_dims:
+    dimension_losses = {dim:[] for dim in encoding_dims}
+    dimension_trustworthiness = {dim:[] for dim in encoding_dims}
+    for dim in encoding_dims:
         dataset_losses=[]
         dataset_trustworthiness=[]
         for dataset_index in range(1,nb_datasets+1):
@@ -51,7 +51,7 @@ def compare_latent_dim_influence():
             dataset_trustworthiness.append(xp_trustworthiness)
         dimension_losses[dim] = np.mean(dataset_losses)
         dimension_trustworthiness[dim] = np.mean(dataset_trustworthiness)
-    for dim in latent_dims:
+    for dim in encoding_dims:
         print(f"Latent dimension : {dim}")
         print(f"| Average loss : {dimension_losses[dim]}")
         print(f"| Average trustworthiness : {dimension_trustworthiness[dim]}")
@@ -60,4 +60,4 @@ def compare_latent_dim_influence():
     return dimension_losses,dimension_trustworthiness
 
 if __name__ == '__main__':
-    compare_latent_dim_influence()
+    compare_encoding_dim_influence()

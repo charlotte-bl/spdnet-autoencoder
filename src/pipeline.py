@@ -25,10 +25,10 @@ def main():
     if args.data=="bci":
         X,labels = load_data_BCI()
         train_loader, val_loader, test_loader = preprocess_data_BCI(X,labels,batch_size=args.batch_size,noise=args.noise)
-        ho, hi, ni, no = args.latent_channel,1,X.data.shape[1],args.latent_dim
+        ho, hi, ni, no = args.encoding_channel,1,X.data.shape[1],args.encoding_dim
     else:
         train_loader, val_loader, test_loader = load_preprocess_synthetic_data(args.index,args.synthetic_generation)
-        ho, hi, ni, no = args.latent_channel,1,get_size_matrix_from_loader(train_loader),args.latent_dim
+        ho, hi, ni, no = args.encoding_channel,1,get_size_matrix_from_loader(train_loader),args.encoding_dim
 
     #load model
     if args.layers_type == 'regular':
@@ -56,8 +56,8 @@ def main():
     #find folder name to save datas
     path = find_name_folder("../models",
                             args.epochs,
-                            args.latent_dim,
-                            args.latent_channel,
+                            args.encoding_dim,
+                            args.encoding_channel,
                             args.loss,
                             args.layers_type,
                             args.data,
