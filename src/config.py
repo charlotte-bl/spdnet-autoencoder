@@ -25,3 +25,7 @@ models_information_model_extension = ".pth"
 
 #extension for other datas
 basic_extension = ".pt"
+
+# name for result folders
+results_folder = "../results"
+results_base_name = "experience"

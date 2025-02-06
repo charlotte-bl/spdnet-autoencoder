@@ -19,7 +19,6 @@ def show_first_image_from_loader(image_from_loader,path,name=""):
         plt.savefig(path+name)
     plt.clf()
 
-
 def show_loss(list_train_loss,list_val_loss,path,name=""):
     plt.plot(list_train_loss,label="train")
     plt.plot(list_val_loss,label="val")
@@ -28,9 +27,6 @@ def show_loss(list_train_loss,list_val_loss,path,name=""):
     if name!="":
         plt.savefig(path+name)
     plt.clf()
-
-def show_metric_latent_dim():
-    pass
 
 def show_latent_dim_2(class_1,class_2,show=False,class_1_name="",class_2_name=""):
     fig = go.Figure()
@@ -68,6 +64,18 @@ def show_latent_dim_2(class_1,class_2,show=False,class_1_name="",class_2_name=""
         )
         if show:
             fig.show()
+
+def show_metrics_from_dict(dict,path,name="",xlabel="Encoding dimension",ylabel="Performance",title="Performance in function of encoding dimension"):
+    lists = sorted(dict.items())
+    x, y = zip(*lists)
+    plt.plot(x, y)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(name)
+    print(path+name)
+    if name!="":
+        plt.savefig(path+name)
+    plt.clf()
 
 if __name__ == '__main__':
     print(matplotlib.__version__)

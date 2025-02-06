@@ -3,10 +3,9 @@ import os
 from visualization import show_first_image_from_loader,show_loss
 import config as c
 
-def find_name_folder(folder,epochs,latent_dim,latent_channel,loss,layers_type,data,synthetic_generation,index,number_layers,batch_size,noise):
 
+def find_second_folder_no_numero(epochs,latent_dim,latent_channel,loss,layers_type,data,synthetic_generation="",index=1,number_layers=0,batch_size=0,noise=""):
     second_folder = c.models_information_base_name
-
     second_folder += f"{c.models_information_n_epochs}{epochs}"
     second_folder += f"{c.models_information_latent_dim}{latent_dim}"
     second_folder += f"{c.models_information_latent_channel}{latent_channel}"
@@ -21,14 +20,31 @@ def find_name_folder(folder,epochs,latent_dim,latent_channel,loss,layers_type,da
     if data=="bci":
         second_folder += f"{c.models_information_batch_size}{batch_size}"
         second_folder += f"{c.models_information_noise}{noise}"
-        
+    return second_folder
+
+def find_numero(folder,second_folder_no_index):
     index=1
     while True:
-        new_second_folder = f"{second_folder}_{index:02d}/"
+        new_second_folder = f"{second_folder_no_index}_{index:02d}/"
         folder_path = os.path.join(folder,new_second_folder)
         if not os.path.exists(folder_path):
-            return folder_path
+            return index
         index = index+1
+
+def find_path(folder,second_folder,numero):
+    name = f"{folder}/{second_folder}_{numero:02d}/"
+    return name
+
+def find_result_path():
+    folder = c.results_folder
+    name = c.results_base_name
+    index = find_numero(folder,name)
+    return find_path(folder,name,index)
+
+def find_name_folder(folder,epochs,latent_dim,latent_channel,loss,layers_type,data,synthetic_generation,index,number_layers,batch_size,noise):
+    second_folder = find_second_folder_no_numero(epochs,latent_dim,latent_channel,loss,layers_type,data,synthetic_generation,index,number_layers,batch_size,noise)
+    numero = find_numero(folder,second_folder)
+    return find_path(folder,second_folder,numero)
 
 def find_name_dataset(name="block_diag"):
     index=1
