@@ -55,7 +55,6 @@ def train(train_loader,val_loader,model,n_epochs,criterion):
         #print losses
         print(f"Epoch : {epoch}")
         print(f"| Perte train moyenne du batch: {epoch_train_loss} ")
-        #print(f"| Perte train dernier élément du batch : {data_train_loss.item()/data_train.size(0)} ")
         print(f"| Perte val : {epoch_val_loss} ")
 
         list_train_loss.append(epoch_train_loss)
@@ -64,5 +63,6 @@ def train(train_loader,val_loader,model,n_epochs,criterion):
         #early stopping
         if epoch_val_loss>min(list_val_loss)+delta:
                 break;
-
+    if noised:
+         return data_train,noisy_train,outputs_train,list_train_loss,data_val,noisy_val,outputs_val,list_val_loss
     return data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss

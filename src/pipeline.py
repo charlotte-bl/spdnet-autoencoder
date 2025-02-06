@@ -5,7 +5,7 @@ import os
 import torch
 
 from parsing import parsing_pipeline
-from data_preprocessing import preprocess_data_BCI,load_data_BCI,load_preprocess_synthetic_data,get_size_matrix_from_loader
+from data_preprocessing import preprocess_data_BCI,load_data_BCI,load_preprocess_synthetic_data,get_size_matrix_from_loader,is_data_with_noise
 
 from models import Autoencoder_test_SPDnet, Autoencoder_nlayers_regular_SPDnet, Autoencoder_layers_byhalf_SPDnet, Autoencoder_one_layer_SPDnet
 
@@ -17,18 +17,18 @@ from save import find_name_folder
 from save import save_model
 from save import save_images_and_results
 
-
 def main():
     args = parsing_pipeline()
     
     #load data and preprocess data
     if args.data=="bci":
         X,labels = load_data_BCI()
-        train_loader, val_loader, test_loader = preprocess_data_BCI(X,labels,batch_size=args.batch_size,noise=args.noise)
+        train_loader, val_loader, test_loader = preprocess_data_BCI(X,labels,batch_size=args.batch_size,noise=args.noise,std=args.std)
         ho, hi, ni, no = args.encoding_channel,1,X.data.shape[1],args.encoding_dim
     else:
         train_loader, val_loader, test_loader = load_preprocess_synthetic_data(args.index,args.synthetic_generation)
         ho, hi, ni, no = args.encoding_channel,1,get_size_matrix_from_loader(train_loader),args.encoding_dim
+    noised = is_data_with_noise(train_loader)
 
     #load model
     if args.layers_type == 'regular':
@@ -45,13 +45,22 @@ def main():
         criterion = torch.nn.MSELoss()
 
     #train model
-    data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss = train(train_loader,val_loader,auto_encoder,args.epochs,criterion)
+    if noised:
+        data_train,noisy_train,outputs_train,list_train_loss,data_val,noisy_val,outputs_val,list_val_loss = train(train_loader,val_loader,auto_encoder,args.epochs,criterion)
+    else :
+        data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss = train(train_loader,val_loader,auto_encoder,args.epochs,criterion)
 
     #test model
-    if args.data=="bci":
-        data_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,show=args.show,class_1_name=labels[0])
+    if noised:
+        if args.data=="bci":
+            data_test,noisy_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,show=args.show,class_1_name=labels[0])
+        else:
+            data_test,noisy_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,show=args.show,class_1_name="")
     else:
-        data_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,show=args.show,class_1_name="")
+        if args.data=="bci":
+            data_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,show=args.show,class_1_name=labels[0])
+        else:
+            data_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,show=args.show,class_1_name="")
 
     #find folder name to save datas
     path = find_name_folder("../models",
@@ -73,7 +82,12 @@ def main():
     save_model(auto_encoder,path)
 
     #save datas
-    save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,test_trustworthiness,path,args.show)
+    
+    if noised:
+        save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,test_trustworthiness,path,noisy_train,noisy_val,noisy_test)
+    else:
+        save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,test_trustworthiness,path)
+
 
 if __name__ == '__main__':
     warnings.filterwarnings('ignore')

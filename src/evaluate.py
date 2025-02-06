@@ -16,8 +16,8 @@ def compare_encoding_dim_influence():
 
     #fixed parameters of the model
     epochs = 50
-    channels_out = 2
-    loss_type = "riemann"
+    channels_out = 1
+    loss_type = "euclidean"
     layers_type = "one_layer"
     data = "synthetic"
     generation = "block_diag"
@@ -27,7 +27,7 @@ def compare_encoding_dim_influence():
 
     #parameters of the pipeline
     encoding_dims= [2, 4, 6, 8, 10, 12, 14, 16]
-    nb_xp = 2
+    nb_xp = 1
     nb_datasets = 5
 
     #where to keep the data

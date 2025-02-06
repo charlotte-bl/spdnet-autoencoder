@@ -66,5 +66,6 @@ def test(test_loader,model,criterion,show=False,class_1_name='left_hand'):
     if z.shape[2]==2:
         show_latent_dim_2(class_1,class_2,show,class_1_name,class_2_name)
         
-
+    if noised:
+        return data_test,noisy_test,outputs_test,test_loss,trustworthiness_recomp
     return data_test,outputs_test,test_loss,trustworthiness_recomp

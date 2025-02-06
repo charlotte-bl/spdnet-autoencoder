@@ -73,14 +73,20 @@ def save_datas_from_model(array,path,name):
     file=path+name+c.basic_extension
     torch.save(array,file)
 
-def save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,test_trustworthiness,path,show=False):    
-    #save images
+def save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,test_trustworthiness,path,noised_train=None,noised_val=None,noised_test=None):    
+    #images
     show_first_image_from_loader(data_train,path,name="original_train")
     show_first_image_from_loader(outputs_train,path,name="reconstruction_train")
     show_first_image_from_loader(data_val,path,name="original_val")
     show_first_image_from_loader(outputs_val,path,name="reconstruction_val")
     show_first_image_from_loader(data_test,path,name="original_test")
     show_first_image_from_loader(outputs_test,path,name="reconstruction_test")
+    if noised_train is not None:
+        show_first_image_from_loader(noised_train,path,name="noised_train")
+        show_first_image_from_loader(noised_test,path,name="noised_test")
+        show_first_image_from_loader(noised_val,path,name="noised_val")
+    
+    #save loss
     show_loss(list_train_loss,list_val_loss,path,name="loss_progression")
     #save datas format pt - pytorch
     save_datas_from_model(data_train,path,name="data_train")

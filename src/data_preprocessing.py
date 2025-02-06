@@ -5,50 +5,43 @@ from moabb.paradigms import FilterBankLeftRightImagery
 import config as c
 
 # functions for noise
-def add_gaussian_noise_to_covariances(cov):
+
+def add_gaussian_noise_to_covariances(cov,std=1):
+    cov_noisy = torch.empty(0, 1, cov.shape[2], cov.shape[3])
+    for i in range(cov.shape[0]):
+        epsilon = torch.randn(cov.shape[2]) * std
+        cov_noisy =  torch.cat((cov_noisy, (cov[i][0] + epsilon @ epsilon.T).unsqueeze(0).unsqueeze(0)) ,dim=0)
+    return cov_noisy.real
+
+def add_gaussian_noise_eigen_decomposition(cov,std):
     cov_noisy = torch.empty(0, 1, cov.shape[2], cov.shape[3])
     for i in range(cov.shape[0]):
         eigenvalues,eigenvectors = torch.linalg.eig(cov[i,0])
         epsilon = torch.randn(cov.shape[2])
-        gamma = 5e1
-        eigenvalues = eigenvalues.real + epsilon*gamma
+        eigenvalues = eigenvalues.real + epsilon*std
         for j in range(eigenvalues.shape[0]):
             eigenvalues[j] = max(eigenvalues[j], 0.1)
         cov_noisy = torch.cat((cov_noisy, (eigenvectors @ torch.diag(eigenvalues.type(torch.cdouble)) @ torch.linalg.inv(eigenvectors)).unsqueeze(0).unsqueeze(0)) ,dim=0)
     return cov_noisy.real
 
-def add_salt_and_pepper_noise_to_covariances(cov):
+def add_salt_and_pepper_noise_to_covariances(cov,std):
     return cov
 
-def add_masking_noise_to_covariances(cov):
+def add_masking_noise_to_covariances(cov,std):
     return cov
+
+# manipulations on dataloader
+
+
+
+
 
 # class to store the data to load the dataloader
-
-class NoisyCleanDataset(torch.utils.data.Dataset):
-    def __init__(self,data,add_noise=add_gaussian_noise_to_covariances):
-        self.data = data
-        self.noised_data = add_noise(data)
-    def __len__(self):
-        return len(self.data)
-    def __getitem__(self,idx):
-        noisy = self.noised_data[idx]
-        clean = self.data[idx]
-        return noisy,clean
-
-class Dataset(torch.utils.data.Dataset):
-    def __init__(self,data):
-        self.data = data
-    def __len__(self):
-        return len(self.data)
-    def __getitem__(self,idx):
-        data = self.data[idx]
-        return data
     
 class NoisyCleanLabeledDataset(torch.utils.data.Dataset):
-    def __init__(self,data,labels,add_noise=add_gaussian_noise_to_covariances):
+    def __init__(self,data,labels,add_noise=add_gaussian_noise_to_covariances,std=1):
         self.data = data
-        self.noised_data = add_noise(data)
+        self.noised_data = add_noise(data,std)
         self.labels = labels
     def __len__(self):
         return len(self.data)
@@ -119,33 +112,16 @@ def raw_to_cov(raw_data):
     """
     return torch.from_numpy(Covariances(estimator='scm').fit_transform(raw_data)).unsqueeze(1)
 
-def preprocess_data_cov_no_labels(X,batch_size,noise):
-    if noise=="salt_pepper":
-        dataset = NoisyCleanDataset(X,add_salt_and_pepper_noise_to_covariances)
-    elif noise=="masking":
-        dataset = NoisyCleanDataset(X,add_masking_noise_to_covariances)
-    elif noise=="gaussian":
-        dataset = NoisyCleanDataset(X,add_gaussian_noise_to_covariances)
-    else:
-        dataset = Dataset(X)
-    x_train,x_val,x_test = torch.utils.data.random_split(dataset,lengths=[0.5,0.25,0.25])
-    train_loader = torch.utils.data.DataLoader(x_train, batch_size=batch_size, shuffle=True)
-    val_loader = torch.utils.data.DataLoader(x_val, batch_size=batch_size*2, shuffle=False)
-    test_loader = torch.utils.data.DataLoader(x_test, batch_size=batch_size*2, shuffle=False)
-    return train_loader, val_loader, test_loader
-
-def preprocess_data_raw_no_labels(X_raw,batch_size,noise):
-    cov = raw_to_cov(X_raw)
-    return preprocess_data_cov_no_labels(cov,batch_size,noise)
-
-def preprocess_data_cov(X,labels,batch_size,noise):
+def preprocess_data_cov(X,labels,batch_size,noise,std):
     #add noise if needed
     if noise=="salt_pepper":
-        dataset = NoisyCleanLabeledDataset(X,labels,add_salt_and_pepper_noise_to_covariances)
+        dataset = NoisyCleanLabeledDataset(X,labels,add_salt_and_pepper_noise_to_covariances,std)
     elif noise=="masking":
-        dataset = NoisyCleanLabeledDataset(X,labels,add_masking_noise_to_covariances)
+        dataset = NoisyCleanLabeledDataset(X,labels,add_masking_noise_to_covariances,std)
     elif noise=="gaussian":
-        dataset = NoisyCleanLabeledDataset(X,labels,add_gaussian_noise_to_covariances)
+        dataset = NoisyCleanLabeledDataset(X,labels,add_gaussian_noise_to_covariances,std)
+    elif noise=="gaussian_eigen":
+        dataset = NoisyCleanLabeledDataset(X,labels,add_gaussian_noise_eigen_decomposition,std)
     else:
         dataset = LabeledDataset(X,labels)
     
@@ -156,11 +132,11 @@ def preprocess_data_cov(X,labels,batch_size,noise):
     test_loader = torch.utils.data.DataLoader(x_test, batch_size=batch_size*2, shuffle=False)
     return train_loader, val_loader, test_loader
 
-def preprocess_data_raw(X_raw,labels,batch_size,noise):
+def preprocess_data_raw(X_raw,labels,batch_size,noise,std):
     cov = raw_to_cov(X_raw)
-    return preprocess_data_cov(cov,labels,batch_size,noise)
+    return preprocess_data_cov(cov,labels,batch_size,noise,std)
 
-def preprocess_data_BCI(X,labels,batch_size,noise):
+def preprocess_data_BCI(X,labels,batch_size,noise,std):
     data_train_val,labels_train,data_test,labels_test = train_test_split_BCI(X,labels)
 
     #covariances from data
@@ -169,14 +145,17 @@ def preprocess_data_BCI(X,labels,batch_size,noise):
 
     #add noise if needed
     if noise=="salt_pepper":
-        dataset_train_val = NoisyCleanLabeledDataset(cov_train_val,labels_train,add_salt_and_pepper_noise_to_covariances)
-        x_test = NoisyCleanLabeledDataset(cov_test,labels_test,add_salt_and_pepper_noise_to_covariances)
+        dataset_train_val = NoisyCleanLabeledDataset(cov_train_val,labels_train,add_salt_and_pepper_noise_to_covariances,std)
+        x_test = NoisyCleanLabeledDataset(cov_test,labels_test,add_salt_and_pepper_noise_to_covariances,std)
     elif noise=="masking":
-        dataset_train_val = NoisyCleanLabeledDataset(cov_train_val,labels_train,add_masking_noise_to_covariances)
-        x_test = NoisyCleanLabeledDataset(cov_test,labels_test,add_masking_noise_to_covariances)
+        dataset_train_val = NoisyCleanLabeledDataset(cov_train_val,labels_train,add_masking_noise_to_covariances,std)
+        x_test = NoisyCleanLabeledDataset(cov_test,labels_test,add_masking_noise_to_covariances,std)
     elif noise=="gaussian":
-        dataset_train_val = NoisyCleanLabeledDataset(cov_train_val,labels_train,add_gaussian_noise_to_covariances)
-        x_test = NoisyCleanLabeledDataset(cov_test,labels_test,add_gaussian_noise_to_covariances)
+        dataset_train_val = NoisyCleanLabeledDataset(cov_train_val,labels_train,add_gaussian_noise_to_covariances,std)
+        x_test = NoisyCleanLabeledDataset(cov_test,labels_test,add_gaussian_noise_to_covariances,std)
+    elif noise=="gaussian_eigen":
+        dataset_train_val = NoisyCleanLabeledDataset(cov_train_val,labels_train,add_gaussian_noise_eigen_decomposition,std)
+        x_test = NoisyCleanLabeledDataset(cov_test,labels_test,add_gaussian_noise_eigen_decomposition,std)
     else:
         dataset_train_val = LabeledDataset(cov_train_val,labels_train)
         x_test = LabeledDataset(cov_test,labels_test)
