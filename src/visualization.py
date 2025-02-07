@@ -28,7 +28,7 @@ def show_loss(list_train_loss,list_val_loss,path,name=""):
         plt.savefig(path+name)
     plt.clf()
 
-def show_latent_dim_2(class_1,class_2,show=False,class_1_name="",class_2_name=""):
+def show_encoding_dim_2(class_1,class_2,show=False,class_1_name="",class_2_name=""):
     fig = go.Figure()
     class_1 = np.array(class_1)
     class_2 = np.array(class_2)
@@ -65,16 +65,18 @@ def show_latent_dim_2(class_1,class_2,show=False,class_1_name="",class_2_name=""
         if show:
             fig.show()
 
-def show_metrics_from_dict(dict,path,name="",xlabel="Encoding dimension",ylabel="Performance",title="Performance in function of encoding dimension"):
+def show_metrics_from_dict(dict, path, name="", xlabel="Encoding dimension", ylabel="Performance", title="Performance in function of encoding dimension"):
     lists = sorted(dict.items())
     x, y = zip(*lists)
-    plt.plot(x, y)
+    means = [val[0] for val in y]
+    std_devs = [val[1] for val in y]
+    plt.errorbar(x, means, yerr=std_devs, fmt='-o', capsize=5, capthick=2, elinewidth=1, color='pink', ecolor='green')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-    plt.title(name)
-    print(path+name)
-    if name!="":
-        plt.savefig(path+name)
+    plt.title(title)
+    print(path + name)
+    if name != "":
+        plt.savefig(path + name)
     plt.clf()
 
 if __name__ == '__main__':

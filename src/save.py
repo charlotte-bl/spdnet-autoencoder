@@ -4,11 +4,11 @@ from visualization import show_first_image_from_loader,show_loss
 import config as c
 
 
-def find_second_folder_no_numero(epochs,latent_dim,latent_channel,loss,layers_type,data,synthetic_generation="",index=1,number_layers=0,batch_size=0,noise=""):
+def find_second_folder_no_numero(epochs,encoding_dim,encoding_channel,loss,layers_type,data,synthetic_generation="",index=1,number_layers=0,batch_size=0,noise="",std=1):
     second_folder = c.models_information_base_name
     second_folder += f"{c.models_information_n_epochs}{epochs}"
-    second_folder += f"{c.models_information_latent_dim}{latent_dim}"
-    second_folder += f"{c.models_information_latent_channel}{latent_channel}"
+    second_folder += f"{c.models_information_encoding_dim}{encoding_dim}"
+    second_folder += f"{c.models_information_encoding_channel}{encoding_channel}"
     second_folder += f"{c.models_information_loss}{loss}"
     second_folder += f"{c.models_information_layers_type}{layers_type}"
     second_folder += f"{c.models_information_data}{data}"
@@ -20,6 +20,8 @@ def find_second_folder_no_numero(epochs,latent_dim,latent_channel,loss,layers_ty
     if data=="bci":
         second_folder += f"{c.models_information_batch_size}{batch_size}"
         second_folder += f"{c.models_information_noise}{noise}"
+        if noise!="none":
+            second_folder += f"{c.models_information_noise_std}{std}"
     return second_folder
 
 def find_numero(folder,second_folder_no_index):
@@ -41,8 +43,8 @@ def find_result_path():
     index = find_numero(folder,name)
     return find_path(folder,name,index)
 
-def find_name_folder(folder,epochs,latent_dim,latent_channel,loss,layers_type,data,synthetic_generation,index,number_layers,batch_size,noise):
-    second_folder = find_second_folder_no_numero(epochs,latent_dim,latent_channel,loss,layers_type,data,synthetic_generation,index,number_layers,batch_size,noise)
+def find_name_folder(folder,epochs,encoding_dim,encoding_channel,loss,layers_type,data,synthetic_generation,index,number_layers,batch_size,noise,std):
+    second_folder = find_second_folder_no_numero(epochs,encoding_dim,encoding_channel,loss,layers_type,data,synthetic_generation,index,number_layers,batch_size,noise,std)
     numero = find_numero(folder,second_folder)
     return find_path(folder,second_folder,numero)
 
@@ -73,7 +75,9 @@ def save_datas_from_model(array,path,name):
     file=path+name+c.basic_extension
     torch.save(array,file)
 
-def save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,test_trustworthiness,path,noised_train=None,noised_val=None,noised_test=None):    
+def save_images_and_results(data_train, outputs_train, list_train_loss, data_val, outputs_val, list_val_loss,
+                            data_test, outputs_test, test_loss, test_trustworthiness, path,
+                            noisy_train=None, noisy_val=None, noisy_test=None, trustworthiness_encoding=None):
     #images
     show_first_image_from_loader(data_train,path,name="original_train")
     show_first_image_from_loader(outputs_train,path,name="reconstruction_train")
@@ -81,10 +85,10 @@ def save_images_and_results(data_train,outputs_train,list_train_loss,data_val,ou
     show_first_image_from_loader(outputs_val,path,name="reconstruction_val")
     show_first_image_from_loader(data_test,path,name="original_test")
     show_first_image_from_loader(outputs_test,path,name="reconstruction_test")
-    if noised_train is not None:
-        show_first_image_from_loader(noised_train,path,name="noised_train")
-        show_first_image_from_loader(noised_test,path,name="noised_test")
-        show_first_image_from_loader(noised_val,path,name="noised_val")
+    if noisy_train is not None:
+        show_first_image_from_loader(noisy_train,path,name="noised_train")
+        show_first_image_from_loader(noisy_val,path,name="noised_test")
+        show_first_image_from_loader(noisy_test,path,name="noised_val")
     
     #save loss
     show_loss(list_train_loss,list_val_loss,path,name="loss_progression")
@@ -102,6 +106,8 @@ def save_images_and_results(data_train,outputs_train,list_train_loss,data_val,ou
 
     save_datas_from_model(test_loss,path,name="test_loss")
     save_datas_from_model(test_trustworthiness,path,name="test_trustworthiness")
+    save_datas_from_model(trustworthiness_encoding,path,name="trustworthiness_encoding")
+
 
 def save_synthetic_data(train_loader,val_loader,test_loader,name="block_diag"):
     file_path_train,file_path_val,file_path_test = find_name_dataset(name=name)

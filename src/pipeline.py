@@ -45,22 +45,16 @@ def main():
         criterion = torch.nn.MSELoss()
 
     #train model
+    data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss, *optional_values = train(train_loader,val_loader,auto_encoder,args.epochs,criterion)
     if noised:
-        data_train,noisy_train,outputs_train,list_train_loss,data_val,noisy_val,outputs_val,list_val_loss = train(train_loader,val_loader,auto_encoder,args.epochs,criterion)
-    else :
-        data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss = train(train_loader,val_loader,auto_encoder,args.epochs,criterion)
+        noisy_train,noisy_val = optional_values[0], optional_values[1]
 
     #test model
+    data_test, outputs_test, test_loss, test_trustworthiness, *optional_values = test(test_loader,auto_encoder,criterion,show=args.show)
     if noised:
-        if args.data=="bci":
-            data_test,noisy_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,show=args.show,class_1_name=labels[0])
-        else:
-            data_test,noisy_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,show=args.show,class_1_name="")
-    else:
-        if args.data=="bci":
-            data_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,show=args.show,class_1_name=labels[0])
-        else:
-            data_test,outputs_test,test_loss,test_trustworthiness = test(test_loader,auto_encoder,criterion,show=args.show,class_1_name="")
+        noisy_test = optional_values[0]
+    if auto_encoder.ho == 1:
+        trustworthiness_encoding = optional_values[-1] #si il y a pas noise c'est 0 et si il y a c'est 1, c'est le dernier
 
     #find folder name to save datas
     path = find_name_folder("../models",
@@ -74,7 +68,9 @@ def main():
                             args.index,
                             args.layers,
                             args.batch_size,
-                            args.noise)
+                            args.noise,
+                            args.std
+                            )
     
     os.mkdir(path)
     
@@ -82,11 +78,23 @@ def main():
     save_model(auto_encoder,path)
 
     #save datas
-    
-    if noised:
-        save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,test_trustworthiness,path,noisy_train,noisy_val,noisy_test)
-    else:
-        save_images_and_results(data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss,data_test,outputs_test,test_loss,test_trustworthiness,path)
+    save_images_and_results(
+        data_train,
+        outputs_train,
+        list_train_loss,
+        data_val,
+        outputs_val,
+        list_val_loss,
+        data_test,
+        outputs_test,
+        test_loss,
+        test_trustworthiness,
+        path,
+        noisy_train=noisy_train if noised else None,  # if noised then put noise
+        noisy_val=noisy_val if noised else None,     
+        noisy_test=noisy_test if noised else None,  
+        trustworthiness_encoding=trustworthiness_encoding if auto_encoder.ho == 1 else None
+        )
 
 
 if __name__ == '__main__':
