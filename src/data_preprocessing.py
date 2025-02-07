@@ -3,14 +3,18 @@ from pyriemann.estimation import Covariances
 from moabb.datasets import BNCI2014_001 # On s'interesse à ce dataset par exemple pour l'instant, il en existe pleins d'autres (cf site de MOABB)
 from moabb.paradigms import FilterBankLeftRightImagery
 import config as c
+import numpy as np
 
 # functions for noise
 
 def add_gaussian_noise_to_covariances(cov,std=1):
     cov_noisy = torch.empty(0, 1, cov.shape[2], cov.shape[3])
     for i in range(cov.shape[0]):
-        epsilon = torch.randn(cov.shape[2]) * std
-        cov_noisy =  torch.cat((cov_noisy, (cov[i][0] + epsilon @ epsilon.T).unsqueeze(0).unsqueeze(0)) ,dim=0)
+        scale = torch.max(torch.abs(cov[i][0]))
+        epsilon = torch.randn(cov.shape[2], cov.shape[3]) * std * scale * 1e-1
+        noise = epsilon @ epsilon.T
+        
+        cov_noisy =  torch.cat((cov_noisy, (cov[i][0] + noise).unsqueeze(0).unsqueeze(0)) ,dim=0)
     return cov_noisy.real
 
 def add_gaussian_noise_eigen_decomposition(cov,std):
@@ -32,9 +36,33 @@ def add_masking_noise_to_covariances(cov,std):
 
 # manipulations on dataloader
 
+def dataloader_to_datasets(dataloader,autoencoder):
+    data_list,labels_list,noisy_data_list,decode_list,code_list = [],[],[],[],[]
+    noised = is_data_with_noise(dataloader)
 
+    for batch in dataloader:
+        if noised:
+            noisy_batch, data_batch,labels_batch = batch
+            code_batch = autoencoder.encoder(noisy_batch)
+            noisy_data_list.append(torch.squeeze(noisy_batch).numpy())
+        else:
+            data_batch,labels_batch = batch
+            code_batch = autoencoder.encoder(data_batch)
+        decode_batch = autoencoder.decoder(code_batch)
+        data_list.append(torch.squeeze(data_batch).numpy())
+        labels_list.append(labels_batch)
+        decode_list.append(torch.squeeze(decode_batch.detach()).numpy())
+        code_list.append(torch.squeeze(code_batch.detach()).numpy())
 
-
+    data_array = np.concatenate(data_list,axis=0)
+    labels_array = np.concatenate(labels_list,axis=0)
+    decode_array = np.concatenate(decode_list,axis=0)
+    code_array = np.concatenate(code_list,axis=0)
+    results = [data_array,labels_array,decode_array,code_array]
+    if noised:
+        noisy_data_array = np.concatenate(noisy_data_list,axis=0)
+        results.append(noisy_data_array)
+    return results #[data_array,labels_array,decode_array,code_array,noisy_data_array]
 
 # class to store the data to load the dataloader
     

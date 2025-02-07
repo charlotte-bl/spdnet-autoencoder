@@ -71,6 +71,7 @@ def save_model(model,folder):
     path = folder+c.models_information_model_name+c.models_information_model_extension
     torch.save(model.state_dict(), path)
 
+
 def save_datas_from_model(array,path,name):
     file=path+name+c.basic_extension
     torch.save(array,file)
@@ -90,6 +91,7 @@ def save_all(auto_encoder,data_train, outputs_train, list_train_loss, data_val, 
     show_first_image_from_loader(outputs_val,path,name="last_batch_reconstruction_val")
     show_first_image_from_loader(data_test,path,name="last_batch_original_test")
     show_first_image_from_loader(outputs_test,path,name="last_batch_reconstruction_test")
+    #save images of noised covariances if we put a noise
     if noisy_train is not None:
         show_first_image_from_loader(noisy_train,path,name="last_batch_noised_train")
         show_first_image_from_loader(noisy_val,path,name="last_batch_noised_test")
@@ -115,7 +117,9 @@ def save_all(auto_encoder,data_train, outputs_train, list_train_loss, data_val, 
         save_datas_from_model(trustworthiness_encoding,path,name="trustworthiness_encoding")
 
 def save_synthetic_data(train_loader,val_loader,test_loader,name="block_diag"):
+    #find name of the dataset
     file_path_train,file_path_val,file_path_test = find_name_dataset(name=name)
+    #save loaders
     torch.save(train_loader, file_path_train)
     torch.save(val_loader, file_path_val)
     torch.save(test_loader, file_path_test)

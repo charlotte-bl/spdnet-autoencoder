@@ -5,9 +5,11 @@ import os
 import torch
 
 from parsing import parsing_pipeline
-from data_preprocessing import preprocess_data_BCI,load_data_BCI,load_preprocess_synthetic_data,get_size_matrix_from_loader,is_data_with_noise
+from data_preprocessing import preprocess_data_BCI,load_data_BCI,load_preprocess_synthetic_data,get_size_matrix_from_loader,is_data_with_noise, dataloader_to_datasets
 
 from models import Autoencoder_test_SPDnet, Autoencoder_nlayers_regular_SPDnet, Autoencoder_layers_byhalf_SPDnet, Autoencoder_one_layer_SPDnet
+
+from sklearn.metrics import accuracy_score
 
 from pyriemann.classification import MDM
 from spdnet.loss import RiemannianDistanceLoss
@@ -43,17 +45,47 @@ def main():
     else:
         criterion = torch.nn.MSELoss()
 
-    #train model
+    #train autoencoder
     data_train,outputs_train,list_train_loss,data_val,outputs_val,list_val_loss, *optional_values = train(train_loader,val_loader,auto_encoder,args.epochs,criterion)
     if noised:
         noisy_train,noisy_val = optional_values[0], optional_values[1]
 
-    #test model
+    #test autoencoder
     data_test, outputs_test, test_loss, trustworthiness, *optional_values = test(test_loader,auto_encoder,criterion,show=args.show)
     if noised:
         noisy_test = optional_values[0]
     if auto_encoder.ho == 1:
         trustworthiness_encoding = optional_values[-1] #si il y a pas noise c'est 0 et si il y a c'est 1, c'est le dernier
+    
+
+    #### ENCAPSULATION A FAIRE DANS : metrics.py
+    #convert loaders to numpy arrays to fit the MDM
+    data_train_array,labels_train_array,decode_train_array,code_train_array,*optional_train_values = dataloader_to_datasets(train_loader,auto_encoder)
+    data_val_array,labels_val_array,decode_val_array,code_val_array,*optional_val_values = dataloader_to_datasets(val_loader,auto_encoder)
+    data_test_array,labels_test_array,decode_test_array,code_test_array,*optional_test_values = dataloader_to_datasets(test_loader,auto_encoder)
+    if noised:
+        noisy_data_train_array = optional_train_values[0]
+        noisy_data_val_array = optional_val_values[0]
+        noisy_data_test_array = optional_test_values[0]
+
+    #train mdm
+    mdm_init = MDM()
+    mdm_init.fit(data_train_array,labels_train_array)
+    y_pred_val = mdm_init.predict(data_val_array)
+    y_pred_test = mdm_init.predict(data_test_array)
+
+    acc_val = accuracy_score(labels_val_array,y_pred_val)
+
+
+    print(y_pred_val,labels_val_array)
+    mdm_decode = MDM()
+    mdm_decode.fit(decode_train_array,labels_train_array)
+
+    if auto_encoder.ho==1:
+        mdm_code =  MDM()
+        mdm_code.fit(code_train_array,labels_train_array)
+
+    #############
 
     #find folder name to save datas
     path = find_name_folder("../models",

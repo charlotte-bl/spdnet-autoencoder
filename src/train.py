@@ -8,6 +8,7 @@ def train(train_loader,val_loader,model,n_epochs,criterion):
     list_train_loss = []
     list_val_loss = []
     noised = is_data_with_noise(train_loader)
+
     for epoch in range(n_epochs):
         #initialization
         batch_train_loss = 0.0
@@ -26,6 +27,7 @@ def train(train_loader,val_loader,model,n_epochs,criterion):
             data_train_loss.backward()
             optimizer.step()
             optimizer.zero_grad()
+
         #validation step
         model.eval()
         for data in val_loader:
@@ -38,7 +40,7 @@ def train(train_loader,val_loader,model,n_epochs,criterion):
                     outputs_val = model(data_val)
                 data_val_loss = criterion(outputs_val, data_val)
                 batch_val_loss += data_val_loss.item()/data_val.size(0)
-
+    
         #loss
         epoch_train_loss = batch_train_loss/len(train_loader)
         epoch_val_loss = batch_val_loss/len(val_loader)
