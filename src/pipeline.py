@@ -14,8 +14,7 @@ from spdnet.loss import RiemannianDistanceLoss
 from train import train
 from test import test
 from save import find_name_folder
-from save import save_model
-from save import save_images_and_results
+from save import save_all
 
 def main():
     args = parsing_pipeline()
@@ -50,7 +49,7 @@ def main():
         noisy_train,noisy_val = optional_values[0], optional_values[1]
 
     #test model
-    data_test, outputs_test, test_loss, test_trustworthiness, *optional_values = test(test_loader,auto_encoder,criterion,show=args.show)
+    data_test, outputs_test, test_loss, trustworthiness, *optional_values = test(test_loader,auto_encoder,criterion,show=args.show)
     if noised:
         noisy_test = optional_values[0]
     if auto_encoder.ho == 1:
@@ -73,12 +72,10 @@ def main():
                             )
     
     os.mkdir(path)
-    
-    #save_model
-    save_model(auto_encoder,path)
 
     #save datas
-    save_images_and_results(
+    save_all(
+        auto_encoder,
         data_train,
         outputs_train,
         list_train_loss,
@@ -88,7 +85,7 @@ def main():
         data_test,
         outputs_test,
         test_loss,
-        test_trustworthiness,
+        trustworthiness,
         path,
         noisy_train=noisy_train if noised else None,  # if noised then put noise
         noisy_val=noisy_val if noised else None,     

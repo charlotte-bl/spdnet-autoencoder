@@ -68,53 +68,54 @@ def find_name_dataset(name="block_diag"):
         index = index+1
 
 def save_model(model,folder):
-    path = f"{folder}{c.models_information_model_name}{c.models_information_model_extension}"
+    path = folder+c.models_information_model_name+c.models_information_model_extension
     torch.save(model.state_dict(), path)
 
 def save_datas_from_model(array,path,name):
     file=path+name+c.basic_extension
     torch.save(array,file)
 
-def save_images_and_results(data_train, outputs_train, list_train_loss, data_val, outputs_val, list_val_loss,
-                            data_test, outputs_test, test_loss, test_trustworthiness, path,
+def save_all(auto_encoder,data_train, outputs_train, list_train_loss, data_val, outputs_val, list_val_loss,
+                            data_test, outputs_test, test_loss, trustworthiness, path,
                             noisy_train=None, noisy_val=None, noisy_test=None, trustworthiness_encoding=None):
-    #images
-    show_first_image_from_loader(data_train,path,name="original_train")
-    show_first_image_from_loader(outputs_train,path,name="reconstruction_train")
-    show_first_image_from_loader(data_val,path,name="original_val")
-    show_first_image_from_loader(outputs_val,path,name="reconstruction_val")
-    show_first_image_from_loader(data_test,path,name="original_test")
-    show_first_image_from_loader(outputs_test,path,name="reconstruction_test")
+    #show folder where to put the datas
+    print(path)
+
+    #save_model
+    save_model(auto_encoder,path)
+    #save images of covariances
+    show_first_image_from_loader(data_train,path,name="last_batch_original_train")
+    show_first_image_from_loader(outputs_train,path,name="last_batch_reconstruction_train")
+    show_first_image_from_loader(data_val,path,name="last_batch_original_val")
+    show_first_image_from_loader(outputs_val,path,name="last_batch_reconstruction_val")
+    show_first_image_from_loader(data_test,path,name="last_batch_original_test")
+    show_first_image_from_loader(outputs_test,path,name="last_batch_reconstruction_test")
     if noisy_train is not None:
-        show_first_image_from_loader(noisy_train,path,name="noised_train")
-        show_first_image_from_loader(noisy_val,path,name="noised_test")
-        show_first_image_from_loader(noisy_test,path,name="noised_val")
+        show_first_image_from_loader(noisy_train,path,name="last_batch_noised_train")
+        show_first_image_from_loader(noisy_val,path,name="last_batch_noised_test")
+        show_first_image_from_loader(noisy_test,path,name="last_batch_noised_val")
     
-    #save loss
+    #save/show loss
     show_loss(list_train_loss,list_val_loss,path,name="loss_progression")
-    #save datas format pt - pytorch
-    save_datas_from_model(data_train,path,name="data_train")
-    save_datas_from_model(outputs_train.detach(),path,name="outputs_train")
     save_datas_from_model(list_train_loss,path,name="list_train_loss")
-
-    save_datas_from_model(data_val,path,name="data_val")
-    save_datas_from_model(outputs_val.detach(),path,name="outputs_val")
     save_datas_from_model(list_val_loss,path,name="list_val_loss")
-
-    save_datas_from_model(data_test,path,name="data_test")
-    save_datas_from_model(outputs_test.detach(),path,name="outputs_test")
-
     save_datas_from_model(test_loss,path,name="test_loss")
-    save_datas_from_model(test_trustworthiness,path,name="test_trustworthiness")
-    save_datas_from_model(trustworthiness_encoding,path,name="trustworthiness_encoding")
+    
+    #save datas format pt - pytorch
+    save_datas_from_model(data_train,path,name="last_batch_data_train")
+    save_datas_from_model(outputs_train.detach(),path,name="last_batch_outputs_train")
+    save_datas_from_model(data_val,path,name="last_batch_data_val")
+    save_datas_from_model(outputs_val.detach(),path,name="last_batch_outputs_val")
+    save_datas_from_model(data_test,path,name="last_batch_data_test")
+    save_datas_from_model(outputs_test.detach(),path,name="last_batch_outputs_test")
 
+    #save trustworthiness
+    save_datas_from_model(trustworthiness,path,name="trustworthiness_decoding")
+    if trustworthiness_encoding is not None:
+        save_datas_from_model(trustworthiness_encoding,path,name="trustworthiness_encoding")
 
 def save_synthetic_data(train_loader,val_loader,test_loader,name="block_diag"):
     file_path_train,file_path_val,file_path_test = find_name_dataset(name=name)
     torch.save(train_loader, file_path_train)
     torch.save(val_loader, file_path_val)
     torch.save(test_loader, file_path_test)
-
-if __name__ == '__main__':
-    path = find_name_folder("/models","one_layer",3,'riemann','none',5,16,2)
-    print(path)
