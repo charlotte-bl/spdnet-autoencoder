@@ -33,6 +33,7 @@ def test(test_loader,model,criterion,show=False,class_1_name=''):
             outputs_test = model.decoder(z)
             data_test_loss = criterion(outputs_test, data_test)
             batch_test_loss += data_test_loss.item()/data_test.size(0)
+            #trustworthiness metrics on batches
             if isinstance(criterion, torch.nn.MSELoss):
                 trustworthiness_recomp += trustworthiness(data_test,outputs_test,pairwise_distance=pairwise_euclidean_distances)
                 if is_one_channel: #on peut pas si ho diff hi car on compare ho channels à hi

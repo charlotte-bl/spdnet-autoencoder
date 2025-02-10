@@ -77,8 +77,8 @@ def save_datas_from_model(array,path,name):
     torch.save(array,file)
 
 def save_all(auto_encoder,data_train, outputs_train, list_train_loss, data_val, outputs_val, list_val_loss,
-                            data_test, outputs_test, test_loss, trustworthiness, path,
-                            noisy_train=None, noisy_val=None, noisy_test=None, trustworthiness_encoding=None):
+                            data_test, outputs_test, test_loss, trustworthiness, acc_init, acc_decode, path,
+                            noisy_train=None, noisy_val=None, noisy_test=None, trustworthiness_encoding=None, acc_code = None):
     #show folder where to put the datas
     print(path)
 
@@ -113,8 +113,12 @@ def save_all(auto_encoder,data_train, outputs_train, list_train_loss, data_val, 
 
     #save trustworthiness
     save_datas_from_model(trustworthiness,path,name="trustworthiness_decoding")
+    save_datas_from_model(acc_init,path,name="accuracy_init")
+    save_datas_from_model(acc_decode,path,name="accuracy_decoding")
     if trustworthiness_encoding is not None:
         save_datas_from_model(trustworthiness_encoding,path,name="trustworthiness_encoding")
+    if acc_code is not None:
+        save_datas_from_model(acc_code,path,name="accuracy_encoding")
 
 def save_synthetic_data(train_loader,val_loader,test_loader,name="block_diag"):
     #find name of the dataset
