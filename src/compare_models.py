@@ -15,7 +15,7 @@ def load_dict(path,name):
 def compare_channels_encoding(epochs, channels_out, losses, layers_type, data, noise, std=None, batch_size=None, generation=None, number_layers=None):
     folder = c.results_folder
     folder_comparison = find_comparison_path(epochs,data,noise,std,batch_size,generation)
-    
+
     os.mkdir(folder_comparison)
 
     list_dict_acc = []
@@ -52,11 +52,11 @@ def compare_channels_encoding(epochs, channels_out, losses, layers_type, data, n
 if __name__ == '__main__':
     #fixed parameters of the model
     epochs = 200
-    losses = [c.parsing_loss_riemann]
+    losses = [c.parsing_loss_riemann,c.parsing_loss_euclid]
     layers_type = ["one_layer"]
     data = "bci"
     batch_size=32
     noise="none"
-    channels_out= [1, 2, 4, 8]
+    channels_out= [1, 2, 4,8]
 
     compare_channels_encoding(epochs=epochs,channels_out=channels_out,losses=losses,layers_type=layers_type,data=data,noise=noise,batch_size=batch_size)

@@ -6,7 +6,6 @@ from sklearn.metrics import accuracy_score
 from pyriemann.classification import MDM
 import config as c
 
-
 def pairwise_riemannian_distances(batch):
     batch_size,_,n,_ = batch.shape
     batch = batch.squeeze(1)

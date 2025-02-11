@@ -71,14 +71,14 @@ def evaluate_encoding_dim_influence(epochs,encoding_dims,channels_out,loss_type,
 if __name__ == '__main__':
     #fixed parameters of the model
     epochs = 200
-    channels_out = 8
-    loss_type = "riemann"
+    channels_out = 2
+    loss_type = "euclid"
     layers_type = "one_layer"
     data = "bci"
     batch_size=32
     noise="none"
     encoding_dims= [2, 4, 6, 8, 10, 12, 14, 16]
-    nb_xp = 14
+    nb_xp = 1
     nb_datasets = 1
 
     evaluate_encoding_dim_influence(epochs=epochs,encoding_dims=encoding_dims,channels_out=channels_out,loss_type=loss_type,layers_type=layers_type,data=data,noise=noise,batch_size=batch_size,nb_datasets=nb_datasets,nb_xp=nb_xp)

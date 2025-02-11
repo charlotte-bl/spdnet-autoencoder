@@ -39,7 +39,6 @@ def test(test_loader,model,criterion,show=False,class_1_name=''):
                 if is_one_channel: #on peut pas si ho diff hi car on compare ho channels à hi
                     trustworthiness_encoding += trustworthiness(data_test,z,pairwise_distance=pairwise_euclidean_distances)
             else:
-                print(outputs_test.shape)
                 trustworthiness_recomp += trustworthiness(data_test,outputs_test)
                 if is_one_channel:
                     trustworthiness_encoding += trustworthiness(data_test,z)
