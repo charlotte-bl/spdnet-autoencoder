@@ -87,13 +87,13 @@ def accuracy(auto_encoder,train_loader,val_loader,test_loader):
  
     result = [acc_init,acc_decode]
 
-    if auto_encoder.ho==1:
-        mdm_code =  MDM()
-        mdm_code.fit(code_train_array,labels_train_array)
-        y_pred_code = mdm_init.predict(code_test_array)
-        acc_code = accuracy_score(labels_test_array,y_pred_code)
-        print(f"| Données encodées : {acc_code} ")
-        result.append(acc_code)
+    #if auto_encoder.ho==1:
+    #    mdm_code =  MDM()
+    #    mdm_code.fit(code_train_array,labels_train_array)
+    #    y_pred_code = mdm_init.predict(code_test_array)
+    #    acc_code = accuracy_score(labels_test_array,y_pred_code)
+    #    print(f"| Données encodées : {acc_code} ")
+    #    result.append(acc_code)
     return result
 
    

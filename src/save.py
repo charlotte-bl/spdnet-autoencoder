@@ -2,6 +2,7 @@ import torch
 import os
 from visualization import show_first_image_from_loader,show_loss
 import config as c
+import numpy as np
 
 
 def find_second_folder_no_numero(epochs,encoding_dim,encoding_channel,loss,layers_type,data,synthetic_generation="",index=1,number_layers=0,batch_size=0,noise="",std=1):
@@ -24,6 +25,7 @@ def find_second_folder_no_numero(epochs,encoding_dim,encoding_channel,loss,layer
             second_folder += f"{c.models_information_noise_std}{std}"
     return second_folder
 
+
 def find_numero(folder,second_folder_no_index):
     index=1
     while True:
@@ -37,9 +39,27 @@ def find_path(folder,second_folder,numero):
     name = f"{folder}/{second_folder}_{numero:02d}/"
     return name
 
-def find_result_path():
+def find_second_folder_results_influence_of_encoding_dim_name(epochs,encoding_channel,loss,layers_type,data,synthetic_generation="",number_layers=0,batch_size=0,noise="",std=1):
+    second_folder = c.results_base_name
+    second_folder += f"{c.models_information_n_epochs}{epochs}"
+    second_folder += f"{c.models_information_encoding_channel}{encoding_channel}"
+    second_folder += f"{c.models_information_loss}{loss}"
+    second_folder += f"{c.models_information_layers_type}{layers_type}"
+    second_folder += f"{c.models_information_data}{data}"
+    if data=="synthetic":
+        second_folder += f"{c.models_information_synthetic_generation}{synthetic_generation}"
+    if layers_type=="regular":
+        second_folder += f"{c.models_information_n_layers}{number_layers}"
+    if data=="bci":
+        second_folder += f"{c.models_information_batch_size}{batch_size}"
+        second_folder += f"{c.models_information_noise}{noise}"
+        if noise!="none":
+            second_folder += f"{c.models_information_noise_std}{std}"
+    return second_folder
+
+def find_result_path(epochs,encoding_channel,loss,layers_type,data,synthetic_generation,number_layers,batch_size,noise,std):
     folder = c.results_folder
-    name = c.results_base_name
+    name = find_second_folder_results_influence_of_encoding_dim_name(epochs,encoding_channel,loss,layers_type,data,synthetic_generation,number_layers,batch_size,noise,std)
     index = find_numero(folder,name)
     return find_path(folder,name,index)
 
@@ -70,7 +90,6 @@ def find_name_dataset(name="block_diag"):
 def save_model(model,folder):
     path = folder+c.models_information_model_name+c.models_information_model_extension
     torch.save(model.state_dict(), path)
-
 
 def save_datas_from_model(array,path,name):
     file=path+name+c.basic_extension
@@ -127,3 +146,9 @@ def save_synthetic_data(train_loader,val_loader,test_loader,name="block_diag"):
     torch.save(train_loader, file_path_train)
     torch.save(val_loader, file_path_val)
     torch.save(test_loader, file_path_test)
+
+def save_dict_tuple(dict,path,name):
+    keys = list(dict.keys()) 
+    means = np.array([v[0] for v in dict.values()])
+    stds = np.array([v[1] for v in dict.values()])
+    np.savez(path+name+c.extension_dict, keys=keys, means=means, stds=stds)

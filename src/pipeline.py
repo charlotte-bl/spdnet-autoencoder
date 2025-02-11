@@ -56,9 +56,9 @@ def main():
         trustworthiness_encoding = optional_values[-1] #si il y a pas noise c'est 0 et si il y a c'est 1, c'est le dernier
     
     # accuracy of prediction
-    acc_init,acc_decode,*optinal_value = accuracy(auto_encoder,train_loader,val_loader,test_loader)
-    if auto_encoder.ho == 1:
-        acc_code = optinal_value[0]
+    acc_init,acc_decode,*optional_values = accuracy(auto_encoder,train_loader,val_loader,test_loader)
+    #if auto_encoder.ho == 1:
+    #    acc_code = optional_values[0]
 
     #find folder name to save datas
     path = find_name_folder("../models",
@@ -98,7 +98,7 @@ def main():
         noisy_val=noisy_val if noised else None,     
         noisy_test=noisy_test if noised else None,  
         trustworthiness_encoding=trustworthiness_encoding if auto_encoder.ho == 1 else None,
-        acc_code=acc_code if auto_encoder.ho == 1 else None,
+        #acc_code=acc_code if auto_encoder.ho == 1 else None,
         )
 
 

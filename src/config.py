@@ -8,6 +8,11 @@ models_information_folder = "../models/"
 models_information_base_name = "autoencoder"
 models_information_model = "_models-"
 
+# name for result folders
+results_folder = "../results"
+results_base_name = "experience"
+
+
 models_information_n_epochs  = "_n-epochs-"
 models_information_encoding_dim = "_encoding-dim-"
 models_information_encoding_channel = "_channels-out-"
@@ -27,6 +32,6 @@ models_information_model_extension = ".pth"
 #extension for other datas
 basic_extension = ".pt"
 
-# name for result folders
-results_folder = "../results"
-results_base_name = "experience"
+#extension for other datas
+extension_dict = ".npz"
+
