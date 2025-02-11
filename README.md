@@ -56,6 +56,19 @@ Please note that :
 
 The program is designed to catch errors and provide helpful feedback if an invalid configuration is used, guiding you to resolve it.
 
+### Evaluate a model
+To evaluate a model, you can run :
+
+cd src/
+python3 evaluate_one_model.py
+
+
+
+
+### Compare different models
+
+
+
 ### Run a pipeline
 There is a pipeline provided by default to see the influence of latent dimensions. If you want to try it, please run :
 

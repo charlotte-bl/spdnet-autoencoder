@@ -204,9 +204,9 @@ class Autoencoder_hourglass_channel_SPDnet(nn.Module):
         self.decoder=nn.Sequential(
             spdnet.ExpEig(),
             spdnet.ReEig(),
-            spdnet.BiMap(self.hi,self.ho,self.no,self.ni//2),
+            spdnet.BiMap(self.ho,self.hi,self.no,self.ni//2),
             spdnet.ReEig(),
-            spdnet.BiMap(self.ho,self.hi,self.ni//2,self.ni),
+            spdnet.BiMap(self.hi,self.ho,self.ni//2,self.ni),
             spdnet.ReEig(),
         )
 

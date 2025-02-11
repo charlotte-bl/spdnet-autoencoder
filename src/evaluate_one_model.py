@@ -54,13 +54,11 @@ def evaluate_encoding_dim_influence(epochs,encoding_dims,channels_out,loss_type,
         print(f"Encoding dimension : {dim}")
         print(f"| Moyenne loss : {dimension_losses[dim][0]}, Écart-type loss : {dimension_losses[dim][1]}")
         print(f"| Moyenne trustworthiness : {dimension_trustworthiness[dim][0]}, Écart-type trustworthiness : {dimension_trustworthiness[dim][1]}")
-        print(f"| Moyenne accuracy initial : {dimension_accuracy_init[dim][0]}, Écart-type accuracy initial : {dimension_accuracy_init[dim][1]}")
         print(f"| Moyenne accuracy decoding : {dimension_accuracy_decode[dim][0]}, Écart-type accuracy decoding : {dimension_accuracy_decode[dim][1]}")
 
     
     show_metrics_from_dict(dimension_losses,path=folder_results,name=c.results_losses,ylabel="Loss")
     show_metrics_from_dict(dimension_trustworthiness,path=folder_results,name=c.results_trustworthiness,ylabel="Trustworthiness")
-    show_metrics_from_dict(dimension_accuracy_init,path=folder_results,name=c.results_accuracy_init,ylabel="Initial accuracy")
     show_metrics_from_dict(dimension_accuracy_decode,path=folder_results,name=c.results_accuracy_decoding,ylabel="Decoding accuracy")
 
     save_dict_tuple(dimension_losses,path=folder_results,name=c.results_losses)
