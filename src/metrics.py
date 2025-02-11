@@ -4,6 +4,7 @@ import numpy as np
 from data_preprocessing import dataloader_to_datasets
 from sklearn.metrics import accuracy_score
 from pyriemann.classification import MDM
+import config as c
 
 
 def pairwise_riemannian_distances(batch):
@@ -55,7 +56,7 @@ def trustworthiness(original,reconstructed,k=2,pairwise_distance=pairwise_rieman
 
     return trustworthiness_score.mean()
 
-def accuracy(auto_encoder,train_loader,val_loader,test_loader):
+def accuracy(auto_encoder,train_loader,val_loader,test_loader,loss):
 
     #convert loaders to numpy arrays to fit the MDM
     data_train_array,labels_train_array,decode_train_array,code_train_array,*optional_train_values = dataloader_to_datasets(train_loader,auto_encoder)
@@ -69,14 +70,23 @@ def accuracy(auto_encoder,train_loader,val_loader,test_loader):
     code_train_array = np.concatenate((code_train_array,code_val_array))
 
     #train mdm
+    #init with our loss
+    if loss== c.parsing_loss_riemann:
+        mdm_init = MDM()
+        mdm_code =  MDM()
+        mdm_decode = MDM()
+    else:
+        mdm_init = MDM(metric='euclid')
+        mdm_code =  MDM(metric='euclid')
+        mdm_decode = MDM(metric='euclid')
+
     # mdm with initial data
-    mdm_init = MDM()
     mdm_init.fit(data_train_array,labels_train_array)
     y_pred_init = mdm_init.predict(data_test_array)
     acc_init = accuracy_score(labels_test_array,y_pred_init)
 
     # mdm after autoencoding
-    mdm_decode = MDM()
+    
     mdm_decode.fit(decode_train_array,labels_train_array)
     y_pred_decode = mdm_init.predict(decode_test_array)
     acc_decode = accuracy_score(labels_test_array,y_pred_decode)
@@ -88,7 +98,7 @@ def accuracy(auto_encoder,train_loader,val_loader,test_loader):
     result = [acc_init,acc_decode]
 
     #if auto_encoder.ho==1:
-    #    mdm_code =  MDM()
+    #    
     #    mdm_code.fit(code_train_array,labels_train_array)
     #    y_pred_code = mdm_init.predict(code_test_array)
     #    acc_code = accuracy_score(labels_test_array,y_pred_code)

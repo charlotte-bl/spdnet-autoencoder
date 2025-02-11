@@ -76,24 +76,24 @@ def show_metrics_from_dict(dict, path, name="", xlabel="Encoding dimension", yla
         plt.savefig(path + name)
     plt.clf()
 
-def show_metrics_from_dicts(dicts, path, names=[""], xlabel="Encoding dimension", ylabel="Performance", title="Performance in function of encoding dimension"):
-    for i, dict in enumerate(dicts):
+def show_metrics_from_dicts(dicts_and_names, path="", xlabel="Encoding dimension", ylabel="Performance", title="Performance in function of encoding dimension"):
+    plt.figure(figsize=(20, 12))
+    for dict, name in dicts_and_names:
         lists = sorted(dict.items())
         x, y = zip(*lists)
         means = [val[0] for val in y]
         std_devs = [val[1] for val in y]
-
-        label = names[i] if i < len(names) else f"Dataset {i+1}"
-        plt.errorbar(x, means, yerr=std_devs, fmt='-o', capsize=5, capthick=2, elinewidth=1, label=label)
+        plt.errorbar(x, means, yerr=std_devs, fmt='-o', capsize=5, capthick=2, elinewidth=1, label=name)
 
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
-    plt.legend()
+    plt.legend(loc='upper left')
 
     if path != "":
         plt.savefig(path)
     plt.clf()
+
 
 
 if __name__ == '__main__':

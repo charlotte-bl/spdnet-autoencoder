@@ -1,5 +1,6 @@
 import argparse
 import sys
+import config as c
 
 def parsing_pipeline():
     #load parsing argument
@@ -10,8 +11,8 @@ def parsing_pipeline():
     parser.add_argument('-r','--learning_rate', type=int , default = 0.01, help='Learning rate for the training')
     parser.add_argument('-d','--encoding_dim', type=int , default = 2, help='Encoding dimension of the autoencoder')
     parser.add_argument('-o','--encoding_channel', type=int , default = 1, help='Encoding channel of the autoencoder')
-    parser.add_argument('-l','--loss', default = 'riemann', help='Loss. It can be riemannian or euclidean.', choices = ['euclidean','riemann'])
-    parser.add_argument('-m', '--layers_type',default='one_layer', help = 'How layers are implemented. Regular means layers are regular between input channels and output channels. By_halves means layers are reduced by half until no. If a layer is in dimension<10x10, then it is directly going to no.', choices = ['regular','by_halves','one_layer'])
+    parser.add_argument('-l','--loss', default = c.parsing_loss_riemann, help='Loss. It can be riemannian or euclidean.', choices = [c.parsing_loss_riemann,c.parsing_loss_euclid])
+    parser.add_argument('-m', '--layers_type',default='one_layer', help = 'How layers are implemented. Regular means layers are regular between input channels and output channels. By_halves means layers are reduced by half until no. If a layer is in dimension<10x10, then it is directly going to no.', choices = ['regular','by_halves','one_layer','hourglass_channel'])
     
     #visualization parameter
     parser.add_argument('-s', '--show', default=False,action='store_true')

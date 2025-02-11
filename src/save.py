@@ -25,7 +25,6 @@ def find_second_folder_no_numero(epochs,encoding_dim,encoding_channel,loss,layer
             second_folder += f"{c.models_information_noise_std}{std}"
     return second_folder
 
-
 def find_numero(folder,second_folder_no_index):
     index=1
     while True:
@@ -57,9 +56,28 @@ def find_second_folder_results_influence_of_encoding_dim_name(epochs,encoding_ch
             second_folder += f"{c.models_information_noise_std}{std}"
     return second_folder
 
+def find_second_folder_comparison(epochs, data, noise, std=None, batch_size=None, generation=None):
+    second_folder = c.comparison_base_name
+    second_folder += f"{c.models_information_n_epochs}{epochs}"
+    second_folder += f"{c.models_information_data}{data}"
+    if data=="synthetic":
+        second_folder += f"{c.models_information_synthetic_generation}{generation}"
+    if data=="bci":
+        second_folder += f"{c.models_information_batch_size}{batch_size}"
+        second_folder += f"{c.models_information_noise}{noise}"
+        if noise!="none":
+            second_folder += f"{c.models_information_noise_std}{std}"
+    return second_folder
+
 def find_result_path(epochs,encoding_channel,loss,layers_type,data,synthetic_generation,number_layers,batch_size,noise,std):
     folder = c.results_folder
     name = find_second_folder_results_influence_of_encoding_dim_name(epochs,encoding_channel,loss,layers_type,data,synthetic_generation,number_layers,batch_size,noise,std)
+    index = find_numero(folder,name)
+    return find_path(folder,name,index)
+
+def find_comparison_path(epochs, data, noise, std=None, batch_size=None, generation=None):
+    folder = c.comparison_folder
+    name = find_second_folder_comparison(epochs,data,noise,std,batch_size,generation)
     index = find_numero(folder,name)
     return find_path(folder,name,index)
 

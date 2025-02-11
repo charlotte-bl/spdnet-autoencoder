@@ -9,7 +9,7 @@ def load_data_from_torch(path,name):
     data = torch.load(path+name,weights_only=True)
     return data
 
-def compare_encoding_dim_influence(epochs,encoding_dims,channels_out,loss_type,layers_type,data,noise,std=None,batch_size=None,generation=None,number_layers=None,nb_datasets=1,nb_xp=1):
+def evaluate_encoding_dim_influence(epochs,encoding_dims,channels_out,loss_type,layers_type,data,noise,std=None,batch_size=None,generation=None,number_layers=None,nb_datasets=1,nb_xp=1):
     folder = c.models_information_folder #not to store but to get the other data
 
     folder_results = find_result_path(epochs,channels_out,loss_type,layers_type,data,generation,number_layers,batch_size,noise,std) #to store the results
@@ -33,13 +33,13 @@ def compare_encoding_dim_influence(epochs,encoding_dims,channels_out,loss_type,l
             for repetition in range(1,nb_xp+1):
                 model_second_folder = find_second_folder_no_numero(epochs,dim,channels_out,loss_type,layers_type,data,generation,dataset_index,number_layers,batch_size,noise,std)
                 model_path = find_path(folder,model_second_folder,repetition)
-                loss = load_data_from_torch(folder+model_path,"test_loss.pt")
+                loss = load_data_from_torch(folder+model_path,c.model_test_loss+c.basic_extension)
                 xp_losses.append(loss)
-                trustworthiness = load_data_from_torch(folder+model_path,"trustworthiness_decoding.pt")
+                trustworthiness = load_data_from_torch(folder+model_path,c.model_trustworthiness_decoding+c.basic_extension)
                 xp_trustworthiness.append(trustworthiness)
-                acc_init = load_data_from_torch(folder+model_path,"accuracy_init.pt")
+                acc_init = load_data_from_torch(folder+model_path,c.model_accuracy_init+c.basic_extension)
                 xp_acc_init.append(acc_init)
-                acc_decode = load_data_from_torch(folder+model_path,"accuracy_decoding.pt")
+                acc_decode = load_data_from_torch(folder+model_path,c.model_accuracy_decoding+c.basic_extension)
                 xp_acc_decode.append(acc_decode)
             dataset_losses.append(xp_losses)
             dataset_trustworthiness.append(xp_trustworthiness)
@@ -58,15 +58,15 @@ def compare_encoding_dim_influence(epochs,encoding_dims,channels_out,loss_type,l
         print(f"| Moyenne accuracy decoding : {dimension_accuracy_decode[dim][0]}, Écart-type accuracy decoding : {dimension_accuracy_decode[dim][1]}")
 
     
-    show_metrics_from_dict(dimension_losses,path=folder_results,name="dimension_losses",ylabel="Loss")
-    show_metrics_from_dict(dimension_trustworthiness,path=folder_results,name="dimension_trustworthiness",ylabel="Trustworthiness")
-    show_metrics_from_dict(dimension_accuracy_init,path=folder_results,name="dimension_accuracy_init",ylabel="Initial accuracy")
-    show_metrics_from_dict(dimension_accuracy_decode,path=folder_results,name="dimension_accuracy_decoding",ylabel="Decoding accuracy")
+    show_metrics_from_dict(dimension_losses,path=folder_results,name=c.results_losses,ylabel="Loss")
+    show_metrics_from_dict(dimension_trustworthiness,path=folder_results,name=c.results_trustworthiness,ylabel="Trustworthiness")
+    show_metrics_from_dict(dimension_accuracy_init,path=folder_results,name=c.results_accuracy_init,ylabel="Initial accuracy")
+    show_metrics_from_dict(dimension_accuracy_decode,path=folder_results,name=c.results_accuracy_decoding,ylabel="Decoding accuracy")
 
-    save_dict_tuple(dimension_losses,path=folder_results,name="dimension_losses")
-    save_dict_tuple(dimension_trustworthiness,path=folder_results,name="dimension_trustworthiness")
-    save_dict_tuple(dimension_accuracy_init,path=folder_results,name="dimension_accuracy_init")
-    save_dict_tuple(dimension_accuracy_decode,path=folder_results,name="dimension_accuracy_decode")
+    save_dict_tuple(dimension_losses,path=folder_results,name=c.results_losses)
+    save_dict_tuple(dimension_trustworthiness,path=folder_results,name=c.results_trustworthiness)
+    save_dict_tuple(dimension_accuracy_init,path=folder_results,name=c.results_accuracy_init)
+    save_dict_tuple(dimension_accuracy_decode,path=folder_results,name=c.results_accuracy_decoding)
 
     print(folder_results)
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     batch_size=32
     noise="none"
     encoding_dims= [2, 4, 6, 8, 10, 12, 14, 16]
-    nb_xp = 13
+    nb_xp = 14
     nb_datasets = 1
 
-    compare_encoding_dim_influence(epochs=epochs,encoding_dims=encoding_dims,channels_out=channels_out,loss_type=loss_type,layers_type=layers_type,data=data,noise=noise,batch_size=batch_size,nb_datasets=nb_datasets,nb_xp=nb_xp)
+    evaluate_encoding_dim_influence(epochs=epochs,encoding_dims=encoding_dims,channels_out=channels_out,loss_type=loss_type,layers_type=layers_type,data=data,noise=noise,batch_size=batch_size,nb_datasets=nb_datasets,nb_xp=nb_xp)

@@ -7,7 +7,7 @@ import torch
 from parsing import parsing_pipeline
 from data_preprocessing import preprocess_data_BCI,load_data_BCI,load_preprocess_synthetic_data,get_size_matrix_from_loader,is_data_with_noise, dataloader_to_datasets
 
-from models import Autoencoder_nlayers_regular_SPDnet, Autoencoder_layers_byhalf_SPDnet, Autoencoder_one_layer_SPDnet
+from models import Autoencoder_nlayers_regular_SPDnet, Autoencoder_layers_byhalf_SPDnet, Autoencoder_one_layer_SPDnet, Autoencoder_hourglass_channel_SPDnet
 
 from metrics import accuracy
 from spdnet.loss import RiemannianDistanceLoss
@@ -15,6 +15,7 @@ from train import train
 from test import test
 from save import find_name_folder
 from save import save_all
+import config as c
 
 def main():
     args = parsing_pipeline()
@@ -34,11 +35,13 @@ def main():
         auto_encoder = Autoencoder_nlayers_regular_SPDnet(ho, hi, ni, no,args.layers)
     elif args.layers_type == 'by_halves':
         auto_encoder = Autoencoder_layers_byhalf_SPDnet(ho, hi, ni, no)
+    elif args.layers_type == 'hourglass_channel':
+        auto_encoder = Autoencoder_hourglass_channel_SPDnet(ho, hi, ni, no)
     else:
         auto_encoder = Autoencoder_one_layer_SPDnet(ho, hi, ni, no)
     
     #loss
-    if args.loss == 'riemann':
+    if args.loss == c.parsing_loss_riemann:
         criterion = RiemannianDistanceLoss()
     else:
         criterion = torch.nn.MSELoss()
@@ -56,7 +59,7 @@ def main():
         trustworthiness_encoding = optional_values[-1] #si il y a pas noise c'est 0 et si il y a c'est 1, c'est le dernier
     
     # accuracy of prediction
-    acc_init,acc_decode,*optional_values = accuracy(auto_encoder,train_loader,val_loader,test_loader)
+    acc_init,acc_decode,*optional_values = accuracy(auto_encoder,train_loader,val_loader,test_loader,args.loss)
     #if auto_encoder.ho == 1:
     #    acc_code = optional_values[0]
 

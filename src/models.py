@@ -37,8 +37,8 @@ class Autoencoder_test_SPDnet(nn.Module):
         )
 
     def forward(self, x):
-        latent = self.encoder(x)
-        reconstruction = self.decoder(latent)
+        code = self.encoder(x)
+        reconstruction = self.decoder(code)
         return reconstruction.double()
     def get_spd_parameters(self):
         return [self.other_param]
@@ -89,8 +89,8 @@ class Autoencoder_nlayers_regular_SPDnet(nn.Module):
         self.decoder = nn.Sequential(*decoder_layers)
 
     def forward(self, x):
-        latent = self.encoder(x)
-        reconstruction = self.decoder(latent)
+        code = self.encoder(x)
+        reconstruction = self.decoder(code)
         return reconstruction
 
     def get_spd_parameters(self):
@@ -140,8 +140,8 @@ class Autoencoder_layers_byhalf_SPDnet(nn.Module):
         self.decoder = nn.Sequential(*decoder_layers)
 
     def forward(self, x):
-        latent = self.encoder(x)
-        reconstruction = self.decoder(latent)
+        code = self.encoder(x)
+        reconstruction = self.decoder(code)
         return reconstruction.double()
 
     def get_spd_parameters(self):
@@ -174,8 +174,45 @@ class Autoencoder_one_layer_SPDnet(nn.Module):
         )
 
     def forward(self, x):
-        latent = self.encoder(x)
-        reconstruction = self.decoder(latent)
+        code = self.encoder(x)
+        reconstruction = self.decoder(code)
+        return reconstruction.double()
+    def get_spd_parameters(self):
+        return [self.other_param]
+
+class Autoencoder_hourglass_channel_SPDnet(nn.Module):
+    def __init__(self,ho,hi,ni,no):
+        """
+        Autoencoder for SPD matrices.
+        Parameters :
+        - ho, hi : output and input channels for bimap
+        - no, ni : output and input matrix dimensions
+        """
+        super(Autoencoder_hourglass_channel_SPDnet, self).__init__()
+        self.ho = ho
+        self.hi = hi
+        self.ni = ni
+        self.no = no
+        self.other_param = nn.Parameter(torch.randn(ho, hi, ni, no))
+        self.encoder=nn.Sequential(
+            spdnet.BiMap(self.ho,self.hi,self.ni,self.ni//2), # on a une premiere couche qui va en filtre de 1 -> 3
+            spdnet.ReEig(),
+            spdnet.BiMap(self.hi,self.ho,self.ni//2,self.no), #filtre de 3 -> 1
+            spdnet.ReEig(),
+            spdnet.LogEig(),
+        )
+        self.decoder=nn.Sequential(
+            spdnet.ExpEig(),
+            spdnet.ReEig(),
+            spdnet.BiMap(self.hi,self.ho,self.no,self.ni//2),
+            spdnet.ReEig(),
+            spdnet.BiMap(self.ho,self.hi,self.ni//2,self.ni),
+            spdnet.ReEig(),
+        )
+
+    def forward(self, x):
+        code = self.encoder(x)
+        reconstruction = self.decoder(code)
         return reconstruction.double()
     def get_spd_parameters(self):
         return [self.other_param]
