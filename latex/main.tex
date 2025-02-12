@@ -11,17 +11,17 @@
 %------------------------------------------------------------
 %This block of code defines the information to appear in the
 %Title page
-\title[AE SPDnet] %optional
+\title[AE SPDnet]
 {Apprendre des distributions sur les variétés riemanniennes}
 
 \subtitle{Auto encodeur pour matrices SPD}
 
-\author[CB] % (optional)
+\author[CB]
 {Charlotte BOUCHERIE, Florian YGER, Thibault DE SURREL}
 
 \institute{LITIS}
 
-\date[2025] % (optional)
+\date[2025]
 {2025}
 
 %\logo{\includegraphics[height=1cm]{overleaf-logo}}
@@ -35,7 +35,7 @@
 }
 
 %------------------------------------------------------------
-% Start of document
+% Start of document -- Auto encodeur pour matrices SPD
 %------------------------------------------------------------
 \begin{document}
 
@@ -48,6 +48,18 @@
 
 %---------------------------------------------------------
 \section{Contexte}
+%---
+\subsection{Utilité matrices SPD}
+%---
+\begin{frame}
+\frametitle{Utilité matrices SPD}
+    \begin{itemize}
+        \item Matrices de covariances 
+        \item Utilisés dans differentes applications de ML : vision par ordinateur, imagerie cérébrale, interface cerveau/ordinateur (EEG)  
+    \end{itemize}
+\end{frame}
+%---
+\subsection{Différents travaux}
 %---
 \begin{frame}
 \frametitle{A Riemannian Network for SPD Matrix Learning}
@@ -67,43 +79,51 @@ DreamNet: A Deep Riemannian Manifold Network for SPD Matrix Learning
 \end{itemize}
 Riemannian Multinomial Logistics Regression for SPD Neural Networks
 \begin{itemize}
-    \item Introduction de la régression logistique pour les matrices SPD
-    \item Nouvelle couche pour la classification
+    \item Adaptation de la régression logistique pour les matrices SPD
+    \item Nouvelle couche spécifique pour la classification
 \end{itemize}
 \end{frame}
 %-
-\begin{frame}{Ce qu'on fait}
-\begin{itemize}
-    \item Auto-encodeur pour matrices SPD
-    \item Couche pour faire les opérations inverses de l'auto encodeur
-    \item Comparaison de différents modèles
-\end{itemize}
-\end{frame}
-%-
+\subsection{Problèmes}
+%---
 \begin{frame}
-\frametitle{Solutions existantes en géométrie euclidienne}
-\begin{itemize}
-\item Aplatir l'espace vers l'espace tangent
-\item Approximation de la distance géodésique : distance de Frobenius
-$ L=||A-B||_F = \sqrt{\sum_{i,j}(A_{ij}-B_{ij})^2}$
-\end{itemize}
+    \frametitle{Solutions existantes en géométrie euclidienne}
+    \begin{itemize}
+    \item Aplatissement de l'espace tangent
+    \item Approximation de la distance : distance de Frobenius
+    $ L=||A-B||_F = \sqrt{\sum_{i,j}(A_{ij}-B_{ij})^2}$
+    \end{itemize}
 \end{frame}
 %-
+
 \begin{frame}
 \frametitle{Problèmes}
 \begin{itemize}
-\item Ne préserve pas la structure géométrique
+\item Ne préserve pas la courbure de l'espace
+\item Résultats non-optimaux avec distance différente
 \item Effet de gonflement \textit{(swelling effect)} : les déterminants de l'interpollation des matrices applattis
 \end{itemize}
 On veut donc prendre en compte la courbure et la non-linéarité de l'espace des matrices SPD
 \end{frame}
 %-
 \begin{frame}
-\frametitle{Géométrie riemannienne}
-Métrique de Riemann \textit{(AIRM)} : $\delta^2_R(X,Y)$ = $||\text{log}(X^{-1/2}YX^{-1/2})||^2_F$
+    \frametitle{Géométrie riemannienne}
+    Métrique de Riemann \textit{(AIRM)} : $\delta^2_R(X,Y)$ = $||\text{log}(X^{-1/2}YX^{-1/2})||^2_F$
+    \begin{itemize}
+    \item Permet de mesurer la similarité entre deux matrices SPD tout en respectant la structure
+    \item On l'utilisera dans notre AE dans le modèle, dans le coût et dans la confiance.
+    \end{itemize}
+\end{frame}
+%---
+\subsection{Objectifs}
+%-
+\begin{frame}
+\frametitle{Ce qu'on fait}
 \begin{itemize}
-\item Permet de mesurer la similarité entre deux matrices SPD tout en respectant la structure
-\item On l'utilisera dans notre AE dans le modèle, dans le coût et dans la confiance.
+    \item Auto-encodeur pour matrices SPD
+    \item Couche pour faire les opérations inverses de l'auto encodeur
+    \item Comparaison de différents modèles
+    \item Incidence de la distance pour l'erreur de reconstitution
 \end{itemize}
 \end{frame}
 %---------------------------------------------------------
@@ -112,7 +132,7 @@ Métrique de Riemann \textit{(AIRM)} : $\delta^2_R(X,Y)$ = $||\text{log}(X^{-1/2
 \frametitle{Principes de base de l'auto-encodeur}
 \begin{itemize}
     \item Réseau de neurones
-    \item Apprentissage non supervisé
+    \item Apprentissage non supervisé : mesure de l'erreur de reconstitution
     \item Réduction de dimensions
     \item Apprends les paternes sous-jacents
     \item Utilisés pour les modèles génératifs
@@ -125,6 +145,42 @@ Métrique de Riemann \textit{(AIRM)} : $\delta^2_R(X,Y)$ = $||\text{log}(X^{-1/2
 
 \end{frame}
 
+%---
+\subsection{Métriques}
+%--
+\begin{frame}
+    \frametitle{Perte de reconstitution}
+    \begin{itemize}
+        \item Pour chaque matrice, on calcule la distance riemannienne avec sa reconstitution.
+    \end{itemize}
+    \begin{center}
+        $ \phi : \mathcal{X} \rightarrow \mathcal{F}$ \\
+        $ \psi : \mathcal{F} \rightarrow \mathcal{X}$ \\
+        $ \phi,\psi = \arg\min\limits_{\phi,\psi} \delta^2_R(X,\psi (\phi(X))) =  \arg \min\limits_{\phi,\psi} ||\text{log}(X^{-1/2}\psi (\phi(X))X^{-1/2})||^2_F$
+    \end{center}
+    \end{frame}
+    %-
+\begin{frame}
+\frametitle{Confiance}
+\begin{itemize}
+    \item Pour chaque matrice, on prend ses k matrices les plus proches dans l'espace de sortie et ses matrices les plus proches dans l'espace d'arrivée.
+    \item La distance est la même utilisée que pour calculer notre fonction de coût.
+    \item On pénalise proportionellement au rang différent dans l'espace d'entrée.
+    \item On ne pénalise pas les rapprochements.
+\end{itemize}
+\begin{center}
+    $ T(k) = 1 - \frac{2}{nk(2n-3k-1)} \sum\limits_{i=1}^n\sum\limits_{j\in\mathcal{N}_i^k} \max(0,(r(i,j)-k)) $
+\end{center}
+\end{frame}
+%-
+\begin{frame}
+\frametitle{Précision}
+\begin{itemize}
+    \item On utilise la MDM (Minimum Distance to Mean) pour connaître la précision avant la reconstitution de nos matrices.
+    \item Pour chaque classe, un centroïde est estimé selon notre distance.
+    \item On compare la précision initiale avec la précision finale.
+\end{itemize}
+\end{frame}
 %---
 \subsection{Couches}
 %--
@@ -219,32 +275,7 @@ La fonction de cette couche est d'appliquer la fonction inverse de la couche Log
 \end{frame}
 
 
-%---
-\subsection{Métriques}
-%--
-\begin{frame}
-\frametitle{Métrique : Confiance}
-\begin{itemize}
-    \item Pour chaque matrice, on prend ses k matrices les plus proches dans l'espace de sortie et ses matrices les plus proches dans l'espace d'arrivée.
-    \item La distance est la même utilisée que pour calculer notre fonction de coût.
-    \item On pénalise proportionellement au rang différent dans l'espace d'entrée.
-    \item On ne pénalise pas les rapprochements.
-\end{itemize}
 
-\begin{center}
-    $ T(k) = 1 - \frac{2}{nk(2n-3k-1)} \sum\limits_{i=1}^n\sum\limits_{j\in\mathcal{N}_i^k} \max(0,(r(i,j)-k)) $
-\end{center}
-
-\end{frame}
-\begin{frame}
-\frametitle{Métrique : Précision}
-\begin{itemize}
-    \item On utilise la MDM (Minimum Distance to Mean) pour connaître la précision avant la reconstitution de nos matrices.
-    \item Pour chaque classe, un centroïde est estimé selon notre distance.
-    \item On compare la précision initiale avec la précision finale.
-\end{itemize}
-
-\end{frame}
 
 %---------------------------------------------------------
 
