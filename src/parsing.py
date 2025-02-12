@@ -1,5 +1,6 @@
 import argparse
 import sys
+import config as c
 
 def parsing_pipeline():
     #load parsing argument
@@ -8,10 +9,10 @@ def parsing_pipeline():
     #model parameters
     parser.add_argument('-e', '--epochs', type=int , default = 5, help='Number of epochs for the training')
     parser.add_argument('-r','--learning_rate', type=int , default = 0.01, help='Learning rate for the training')
-    parser.add_argument('-d','--latent_dim', type=int , default = 2, help='Latent dimension of the autoencoder')
-    parser.add_argument('-o','--latent_channel', type=int , default = 1, help='Latent channel of the autoencoder')
-    parser.add_argument('-l','--loss', default = 'riemann', help='Loss. It can be riemannian or euclidean.', choices = ['euclidean','riemann'])
-    parser.add_argument('-m', '--layers_type',default='one_layer', help = 'How layers are implemented. Regular means layers are regular between input channels and output channels. By_halves means layers are reduced by half until no. If a layer is in dimension<10x10, then it is directly going to no.', choices = ['regular','by_halves','one_layer'])
+    parser.add_argument('-d','--encoding_dim', type=int , default = 2, help='Encoding dimension of the autoencoder')
+    parser.add_argument('-o','--encoding_channel', type=int , default = 1, help='Encoding channel of the autoencoder')
+    parser.add_argument('-l','--loss', default = c.parsing_loss_riemann, help='Loss. It can be riemannian or euclidean.', choices = [c.parsing_loss_riemann,c.parsing_loss_euclid])
+    parser.add_argument('-m', '--layers_type',default='one_layer', help = 'How layers are implemented. Regular means layers are regular between input channels and output channels. By_halves means layers are reduced by half until no. If a layer is in dimension<10x10, then it is directly going to no.', choices = ['regular','by_halves','one_layer','hourglass_channel'])
     
     #visualization parameter
     parser.add_argument('-s', '--show', default=False,action='store_true')
@@ -21,9 +22,10 @@ def parsing_pipeline():
     parser.add_argument('-c', '--layers', type=int , default = 1, help='How many layers the model have. Only for the regular layers_type.')
     parser.add_argument('-b','--batch_size', type=int , default = 32, help='Size of the batch for train/val/test')
     parser.add_argument('-t', '--synthetic_generation', default='block_diag', help ="Which generation method to use for the model", choices = ['block_diag','lambda_mu'])
-    parser.add_argument('-i', '--index', default='1', type=int, help ="Index of the synthetic data")
     parser.add_argument('-n','--noise', default = 'none', help='Type of noise for the denoising. none if there is no noise.', choices=['none', 'gaussian', 'salt_pepper','masking'])
-
+    parser.add_argument('--std', default='1', type=int, help ="Standard deviation of the noise")
+    parser.add_argument('-i', '--index', default='1', type=int, help ="Index of the synthetic data")
+    
     args = parser.parse_args()
 
     #errors for dependencies of arguments
@@ -41,6 +43,10 @@ def parsing_pipeline():
         parser.error("--batch_size has to be unspecified for the program to load the synthetic dataset")
     if args.data=="synthetic" and "--noise" in sys.argv:
         parser.error("--noise has to be unspecified for the program to load the synthetic dataset")
+    if args.data=="synthetic" and "--std" in sys.argv:
+        parser.error("--std has to be unspecified for the program to load the synthetic dataset")
+    if args.noise=="none" and "--std" in sys.argv:
+        parser.error("--std needs a noise")
     
     return args
 
@@ -52,7 +58,11 @@ def parsing_generation_data():
     parser.add_argument('-s','--size_block_matrices', type=int , default = 8, help='Size of the block matrices you want to have. Beware that the effective size of the matrix will be twice this value, since we have two blocks.')
     parser.add_argument('-n','--noise', default = 'none', help='Type of noise for the denoising. none if there is no noise.', choices=['none', 'gaussian', 'salt_pepper','masking'])
     parser.add_argument('-q','--number_matrices', type=int , default = 300, help='How many matrices are in each of your dataset.')
+    parser.add_argument('-e','--std', type=int , default = 1, help='Standard deviation of the noise if there is one.')
 
     args = parser.parse_args()
+
+    if args.noise=="none" and "--std" in sys.argv:
+        parser.error("--std has to be unspecified if there is no noise")
 
     return args

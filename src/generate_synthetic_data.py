@@ -28,14 +28,14 @@ def generate_dataset_block_diag(X):
     labels = np.repeat(['unique_class'], X.shape[0])
     return X,labels
 
-def generate_synthetic_data_block_diag(number_matrices,size_matrices,batch_size,noise):
+def generate_synthetic_data_block_diag(number_matrices,size_matrices,batch_size,noise,std):
     X = generate_matrices_block_diag(number_matrices=number_matrices, size_matrices=size_matrices)
     dataset,labels = generate_dataset_block_diag(X)
-    return preprocess_data_cov(dataset,labels,batch_size,noise)
+    return preprocess_data_cov(dataset,labels,batch_size,noise,std)
 
-def generate_datasets_block_diag(number_dataset,number_matrices,size_matrices,batch_size,noise):
+def generate_datasets_block_diag(number_dataset,number_matrices,size_matrices,batch_size,noise,std):
     for _ in range(number_dataset):
-        train_loader, val_loader, test_loader = generate_synthetic_data_block_diag(number_matrices=number_matrices,size_matrices=size_matrices,batch_size=batch_size,noise=noise)
+        train_loader, val_loader, test_loader = generate_synthetic_data_block_diag(number_matrices=number_matrices,size_matrices=size_matrices,batch_size=batch_size,noise=noise,std=std)
         save_synthetic_data(train_loader, val_loader, test_loader,name="block_diag")
 
 # generation data based on lambda and mu
@@ -70,14 +70,14 @@ def generate_dataset_lambda_mu(X_sigma_plus,X_sigma_minus):
     labels_sigma_minus = np.repeat(['sigma_minus'], X_sigma_minus.shape[0])
     return torch.cat((X_sigma_plus,X_sigma_minus)),np.concatenate((labels_sigma_plus,labels_sigma_minus))
 
-def generate_synthetic_data_lambda_mu(number_matrices,size_matrices,batch_size,noise):
+def generate_synthetic_data_lambda_mu(number_matrices,size_matrices,batch_size,noise,std):
     X_sigma_plus,X_sigma_minus = generate_matrices_lambda_mu(number_matrices=number_matrices, size_matrices=size_matrices)
     dataset,labels = generate_dataset_lambda_mu(X_sigma_plus,X_sigma_minus)
-    return preprocess_data_cov(dataset,labels,batch_size,noise)
+    return preprocess_data_cov(dataset,labels,batch_size,noise,std)
 
-def generate_datasets_lambda_mu(number_dataset,number_matrices,size_matrices,batch_size,noise):
+def generate_datasets_lambda_mu(number_dataset,number_matrices,size_matrices,batch_size,noise,std):
     for _ in range(number_dataset):
-        train_loader, val_loader, test_loader = generate_synthetic_data_lambda_mu(number_matrices=number_matrices,size_matrices=size_matrices,batch_size=batch_size,noise=noise)
+        train_loader, val_loader, test_loader = generate_synthetic_data_lambda_mu(number_matrices=number_matrices,size_matrices=size_matrices,batch_size=batch_size,noise=noise,std=std)
         save_synthetic_data(train_loader, val_loader, test_loader,name="lambda_mu")
 
 # generation of datasets
@@ -85,9 +85,9 @@ def generate_datasets_lambda_mu(number_dataset,number_matrices,size_matrices,bat
 def main():
     args=parsing_generation_data()
     if args.synthetic_generation == "lambda_mu":
-        generate_datasets_lambda_mu(number_dataset=args.number_dataset,number_matrices=args.number_matrices,size_matrices=args.size_block_matrices,batch_size=args.batch_size,noise=args.noise)
+        generate_datasets_lambda_mu(number_dataset=args.number_dataset,number_matrices=args.number_matrices,size_matrices=args.size_block_matrices,batch_size=args.batch_size,noise=args.noise,std=args.std)
     else:
-        generate_datasets_block_diag(number_dataset=args.number_dataset,number_matrices=args.number_matrices,size_matrices=args.size_block_matrices,batch_size=args.batch_size,noise=args.noise)
+        generate_datasets_block_diag(number_dataset=args.number_dataset,number_matrices=args.number_matrices,size_matrices=args.size_block_matrices,batch_size=args.batch_size,noise=args.noise,std=args.std)
 
 if __name__ == '__main__':
     main()

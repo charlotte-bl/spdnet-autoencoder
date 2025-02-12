@@ -14,25 +14,19 @@ def show_first_image_from_loader(image_from_loader,path,name=""):
     image = image_from_loader.data[0].squeeze(0).numpy()
     plt.imshow(image,cmap='gray')
     plt.colorbar()
-    print(path+name)
     if name!="":
         plt.savefig(path+name)
     plt.clf()
-
 
 def show_loss(list_train_loss,list_val_loss,path,name=""):
     plt.plot(list_train_loss,label="train")
     plt.plot(list_val_loss,label="val")
     plt.legend()
-    print(path+name)
     if name!="":
         plt.savefig(path+name)
     plt.clf()
 
-def show_metric_latent_dim():
-    pass
-
-def show_latent_dim_2(class_1,class_2,show=False,class_1_name="",class_2_name=""):
+def show_encoding_dim_2(class_1,class_2,show=False,class_1_name="",class_2_name=""):
     fig = go.Figure()
     class_1 = np.array(class_1)
     class_2 = np.array(class_2)
@@ -68,6 +62,39 @@ def show_latent_dim_2(class_1,class_2,show=False,class_1_name="",class_2_name=""
         )
         if show:
             fig.show()
+
+def show_metrics_from_dict(dict, path, name="", xlabel="Encoding dimension", ylabel="Performance", title="Performance in function of encoding dimension"):
+    lists = sorted(dict.items())
+    x, y = zip(*lists)
+    means = [val[0] for val in y]
+    std_devs = [val[1] for val in y]
+    plt.errorbar(x, means, yerr=std_devs, fmt='-o', capsize=5, capthick=2, elinewidth=1, color='pink', ecolor='green')
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+    if name != "":
+        plt.savefig(path + name)
+    plt.clf()
+
+def show_metrics_from_dicts(dicts_and_names, path="", xlabel="Encoding dimension", ylabel="Performance", title="Performance in function of encoding dimension"):
+    plt.figure(figsize=(20, 12))
+    for dict, name in dicts_and_names:
+        lists = sorted(dict.items())
+        x, y = zip(*lists)
+        means = [val[0] for val in y]
+        std_devs = [val[1] for val in y]
+        plt.errorbar(x, means, yerr=std_devs, fmt='-o', capsize=5, capthick=2, elinewidth=1, label=name)
+
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
+    plt.legend(loc='upper left')
+
+    if path != "":
+        plt.savefig(path)
+    plt.clf()
+
+
 
 if __name__ == '__main__':
     print(matplotlib.__version__)
