@@ -63,16 +63,21 @@ class Autoencoder_nlayers_regular_SPDnet(nn.Module):
         
         #calcul tailles des couches intermediares
         self.layer_sizes = [ni]
+        self.channel_sizes = [hi]
         step = (self.no - self.ni) / (self.n_layers - 1)
+        step_channel = (self.ho - self.hi) / (self.n_layers - 1)
         for i in range(1, self.n_layers - 1):
             size = self.ni + int(i * step)
             self.layer_sizes.append(size)
+            size_channel = self.hi + int(i*step_channel)
+            self.channel_sizes.append(size_channel)
         self.layer_sizes.append(self.no)
+        self.channel_sizes.append(self.ho)
 
         # encoder
         encoder_layers = []
         for i in range(n_layers-1):
-            encoder_layers.append(spdnet.BiMap(self.ho, self.hi, self.layer_sizes[i],self.layer_sizes[i+1]))
+            encoder_layers.append(spdnet.BiMap(self.channel_sizes[i+1], self.channel_sizes[i], self.layer_sizes[i],self.layer_sizes[i+1]))
             encoder_layers.append(spdnet.ReEig())
         encoder_layers.append(spdnet.LogEig())
         
@@ -83,7 +88,7 @@ class Autoencoder_nlayers_regular_SPDnet(nn.Module):
         decoder_layers.append(spdnet.ExpEig())
         decoder_layers.append(spdnet.ReEig())
         for i in range(n_layers-1, 0, -1):
-            decoder_layers.append(spdnet.BiMap(self.ho, self.hi, self.layer_sizes[i], self.layer_sizes[i-1]))
+            decoder_layers.append(spdnet.BiMap(self.channel_sizes[i-1], self.channel_sizes[i], self.layer_sizes[i], self.layer_sizes[i-1]))
             decoder_layers.append(spdnet.ReEig())
         
         self.decoder = nn.Sequential(*decoder_layers)

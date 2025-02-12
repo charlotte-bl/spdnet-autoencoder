@@ -4,6 +4,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{tikz-3dplot}
+\usepackage{svg}
 
 \usetheme{Madrid}
 \usecolortheme{default}
@@ -249,10 +250,16 @@ La fonction de cette couche est d'appliquer la fonction inverse de la couche Log
     \item On regarde l'influence de la dimension de sortie et de la couche de sortie.
     \item Le décodeur fait l'opération inverse.
 \end{itemize}
+\begin{center}
+    {\tiny
+    \includesvg[width=0.9\textwidth]{figures/one_layer.svg}
+    }
+\end{center}
+
 \end{frame}
 
 \begin{frame}
-\frametitle{Modèle : représentation avec les channels}
+\frametitle{Modèle : filtres en entonnoir}
 \begin{itemize}
     \item On a deux couches BiMap.
         \begin{itemize}
@@ -262,15 +269,41 @@ La fonction de cette couche est d'appliquer la fonction inverse de la couche Log
     \item On regarde l'influence du nombre de filtres intermediaires et de la dimension de sortie.
     \item Le décodeur fait l'opération inverse.
 \end{itemize}
+\begin{center}
+    {\tiny
+    \includesvg[width=\textwidth]{figures/hourglass_channel.svg}
+    }
+\end{center}
+
 \end{frame}
+
 
 \begin{frame}
 \frametitle{Modèle : plusieurs couches régulières}
-
+\begin{itemize}
+    \item Nombre de couches BiMap fixée en paramètres.
+    \item Canaux et tailles de matrices intermédiare en fonction d'un nombre de couches fixés.
+    \item Le décodeur fait l'opération inverse.
+\end{itemize}
+\begin{center}
+    {\tiny
+    \includesvg[width=\textwidth]{figures/regular.svg}
+    }
+\end{center}
 \end{frame}
 
 \begin{frame}
 \frametitle{Modèle : taille de couches réduite de moitié}
+\begin{itemize}
+    \item Nombre de couches BiMap et de filtres dans les couches dépend de $ni$ et $no$.
+    \item Taille de matrice divisé par deux , nombre de filtre multiplié par deux à chaque couche.
+    \item Le décodeur fait l'opération inverse.
+\end{itemize}
+\begin{center}
+    {\tiny
+    \includesvg[width=\textwidth]{figures/by_halves.svg}
+    }
+\end{center}
 
 \end{frame}
 

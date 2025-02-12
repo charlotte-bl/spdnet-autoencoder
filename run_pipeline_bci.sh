@@ -2,7 +2,7 @@
 
 encoding_dims=(2 4 6 8 10 12 14 16)
 encoding_channels=(1 2 3 4 5 6 7 8)
-xp=4
+xp=3
 cd src || exit 1
 
 for i in $(seq 1 $xp); do
