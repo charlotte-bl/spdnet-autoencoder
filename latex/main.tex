@@ -1,0 +1,306 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz-3dplot}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+
+%------------------------------------------------------------
+%This block of code defines the information to appear in the
+%Title page
+\title[AE SPDnet] %optional
+{Apprendre des distributions sur les variétés riemanniennes}
+
+\subtitle{Auto encodeur pour matrices SPD}
+
+\author[CB] % (optional)
+{Charlotte BOUCHERIE, Florian YGER, Thibault DE SURREL}
+
+\institute{LITIS}
+
+\date[2025] % (optional)
+{2025}
+
+%\logo{\includegraphics[height=1cm]{overleaf-logo}}
+
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table des matières}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+%------------------------------------------------------------
+% Start of document
+%------------------------------------------------------------
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{Table des matières}
+\tableofcontents
+\end{frame}
+
+%---------------------------------------------------------
+\section{Contexte}
+%---
+\begin{frame}
+\frametitle{A Riemannian Network for SPD Matrix Learning}
+\begin{itemize}
+\item Introduction d'une architecture de réseau qui conserve les propriétés des matrices définies positives pour le Deep Learning
+\item 3 couches différentes : BiMap, ReEig, LogEig
+\item On va se baser sur ces couches pour notre auto-encodeur
+\end{itemize}
+
+\end{frame}
+%-
+\begin{frame}
+\frametitle{Différents travaux}
+DreamNet: A Deep Riemannian Manifold Network for SPD Matrix Learning
+\begin{itemize}
+    \item Méthodologie pour créer des réseaux profonds
+\end{itemize}
+Riemannian Multinomial Logistics Regression for SPD Neural Networks
+\begin{itemize}
+    \item Introduction de la régression logistique pour les matrices SPD
+    \item Nouvelle couche pour la classification
+\end{itemize}
+\end{frame}
+%-
+\begin{frame}{Ce qu'on fait}
+\begin{itemize}
+    \item Auto-encodeur pour matrices SPD
+    \item Couche pour faire les opérations inverses de l'auto encodeur
+    \item Comparaison de différents modèles
+\end{itemize}
+\end{frame}
+%-
+\begin{frame}
+\frametitle{Solutions existantes en géométrie euclidienne}
+\begin{itemize}
+\item Aplatir l'espace vers l'espace tangent
+\item Approximation de la distance géodésique : distance de Frobenius
+$ L=||A-B||_F = \sqrt{\sum_{i,j}(A_{ij}-B_{ij})^2}$
+\end{itemize}
+\end{frame}
+%-
+\begin{frame}
+\frametitle{Problèmes}
+\begin{itemize}
+\item Ne préserve pas la structure géométrique
+\item Effet de gonflement \textit{(swelling effect)} : les déterminants de l'interpollation des matrices applattis
+\end{itemize}
+On veut donc prendre en compte la courbure et la non-linéarité de l'espace des matrices SPD
+\end{frame}
+%-
+\begin{frame}
+\frametitle{Géométrie riemannienne}
+Métrique de Riemann \textit{(AIRM)} : $\delta^2_R(X,Y)$ = $||\text{log}(X^{-1/2}YX^{-1/2})||^2_F$
+\begin{itemize}
+\item Permet de mesurer la similarité entre deux matrices SPD tout en respectant la structure
+\item On l'utilisera dans notre AE dans le modèle, dans le coût et dans la confiance.
+\end{itemize}
+\end{frame}
+%---------------------------------------------------------
+\section{Auto-encodeur}
+\begin{frame}
+\frametitle{Principes de base de l'auto-encodeur}
+\begin{itemize}
+    \item Réseau de neurones
+    \item Apprentissage non supervisé
+    \item Réduction de dimensions
+    \item Apprends les paternes sous-jacents
+    \item Utilisés pour les modèles génératifs
+\end{itemize}
+\begin{center}
+    $ \phi : \mathcal{X} \rightarrow \mathcal{F}$ , l'encodeur \\
+    $ \psi : \mathcal{F} \rightarrow \mathcal{X}$ , le décodeur \\
+    $ \phi,\psi = \arg \min\limits_{\phi,\psi} || X-(\psi \circ \phi)X||^2$
+\end{center}
+
+\end{frame}
+
+%---
+\subsection{Couches}
+%--
+
+\begin{frame}
+\frametitle{Couche BiMap}
+\begin{itemize}
+    \item La fonction de cette couche est de générer des matrices SPD plus compactes et plus discrimantes.
+    \item On a donc une couche qui effectue une application bilinéaire $f_b$ pour transformer les matrices initiales en nouvelles matrices de dimension inférieure.
+\end{itemize}
+
+\begin{center}
+    $ X_k = f_b^{(k)}(X_{k-1};W_k)=W_kX_{k-1}W_k^T$
+\end{center}
+
+$W_k$ est de rang plein pour garantir que $X_k$ reste SPD.
+
+\begin{block}{Paramètres dans le réseau}
+Nombre de filtres/canaux d'entrée \textit{hi}, nombre de filtres/canaux de sorties \textit{ho}, taille de la matrice d'entrée \textit{ni}, taille de la matrice de sortie \textit{no}
+\end{block}
+
+
+\end{frame}
+%--
+\begin{frame}
+\frametitle{Couche ReEig}
+\begin{itemize}
+    \item La fonction de cette couche est d'améliorer les performances discriminantes en introduisant une non linéarité, de la même manière que ReLU.
+    \item On introduit donc une fonction non-linéaire $f_r$ qui corrige les matrices en posant un seuil aux valeurs propres faibles. 
+\end{itemize}
+
+\begin{center}
+    $ X_k = f_r^{(k)}(X_{k-1})=U_{k-1}\max(\epsilon I, \Sigma_{k-1})U_{k-1}^T$
+\end{center}
+
+\end{frame}
+
+%--
+\begin{frame}
+\frametitle{Couche LogEig/ExpEig}
+
+\begin{block}{LogEig}
+La fonction de cette couche est de pouvoir appliquer la géométrie de Riemann au matrice sortante.
+\end{block}
+
+\begin{center}
+    $ X_k = f_l^{(k)}(X_{k-1})=\log (X_{k-1})=U_{k-1}\log(\Sigma_{k-1})U_{k-1}^T$
+\end{center}
+
+\begin{block}{ExpEig}
+La fonction de cette couche est d'appliquer la fonction inverse de la couche LogEig
+\end{block}
+
+\begin{center}
+    $ X_k = f_e^{(k)}(X_{k-1})=\exp (X_{k-1})$
+\end{center}
+
+\end{frame}
+%---
+\subsection{Modèles}
+%--
+\begin{frame}
+\frametitle{Modèle : une couche}
+\begin{itemize}
+    \item On a une seule couche BiMap pour l'encodeur qui va de $ni\rightarrow no$ et de $hi\rightarrow ho$.
+    \item On regarde l'influence de la dimension de sortie et de la couche de sortie.
+    \item Le décodeur fait l'opération inverse.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Modèle : représentation avec les channels}
+\begin{itemize}
+    \item On a deux couches BiMap.
+        \begin{itemize}
+            \item $ni\rightarrow ni/2$ et de $hi\rightarrow ho$.
+            \item $ni/2\rightarrow no$ et de $ho\rightarrow hi$.
+        \end{itemize}
+    \item On regarde l'influence du nombre de filtres intermediaires et de la dimension de sortie.
+    \item Le décodeur fait l'opération inverse.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Modèle : plusieurs couches régulières}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Modèle : taille de couches réduite de moitié}
+
+\end{frame}
+
+
+%---
+\subsection{Métriques}
+%--
+\begin{frame}
+\frametitle{Métrique : Confiance}
+\begin{itemize}
+    \item Pour chaque matrice, on prend ses k matrices les plus proches dans l'espace de sortie et ses matrices les plus proches dans l'espace d'arrivée.
+    \item La distance est la même utilisée que pour calculer notre fonction de coût.
+    \item On pénalise proportionellement au rang différent dans l'espace d'entrée.
+    \item On ne pénalise pas les rapprochements.
+\end{itemize}
+
+\begin{center}
+    $ T(k) = 1 - \frac{2}{nk(2n-3k-1)} \sum\limits_{i=1}^n\sum\limits_{j\in\mathcal{N}_i^k} \max(0,(r(i,j)-k)) $
+\end{center}
+
+\end{frame}
+\begin{frame}
+\frametitle{Métrique : Précision}
+\begin{itemize}
+    \item On utilise la MDM (Minimum Distance to Mean) pour connaître la précision avant la reconstitution de nos matrices.
+    \item Pour chaque classe, un centroïde est estimé selon notre distance.
+    \item On compare la précision initiale avec la précision finale.
+\end{itemize}
+
+\end{frame}
+
+%---------------------------------------------------------
+
+\section{Résultats}
+%---
+
+%---
+\subsection{Données synthétiques}
+%--
+\begin{frame}
+\frametitle{Données synthétiques}
+
+\end{frame}
+
+%---
+\subsection{Données BCI}
+%--
+
+\begin{frame}
+\frametitle{Données BCI}
+
+\end{frame}
+
+%--
+\begin{frame}
+\frametitle{Ajout de bruits}
+
+\end{frame}
+%-
+\begin{frame}
+\frametitle{Bruit gaussien}
+
+\end{frame}
+
+%-
+\begin{frame}
+\frametitle{Bruit poivre et sel}
+
+\end{frame}
+
+%-
+\begin{frame}
+\frametitle{Bruit de masquage}
+
+\end{frame}
+
+%-
+\begin{frame}
+\frametitle{Résumé}
+\begin{itemize}
+    \item On prédit moins bien les données après le passage dans l'auto-encodeur
+    \item On conserve les voisinages
+    \item On compresse avec perte
+\end{itemize}
+\end{frame}
+
+
+%---------------------------------------------------------
+\end{document}

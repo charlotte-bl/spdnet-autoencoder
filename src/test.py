@@ -40,8 +40,8 @@ def test(test_loader,model,criterion,show=False,class_1_name=''):
                     trustworthiness_encoding += trustworthiness(data_test,z,pairwise_distance=pairwise_euclidean_distances)
             else:
                 trustworthiness_recomp += trustworthiness(data_test,outputs_test)
-                if is_one_channel:
-                    trustworthiness_encoding += trustworthiness(data_test,z)
+                #if is_one_channel:
+                #    trustworthiness_encoding += trustworthiness(data_test,z)
             
     test_loss = batch_test_loss/len(test_loader)
     trustworthiness_recomp = trustworthiness_recomp/len(test_loader)
@@ -49,8 +49,8 @@ def test(test_loader,model,criterion,show=False,class_1_name=''):
     print("Test : ")
     print(f"| Perte : {test_loss}")
     print(f"| Trustworthiness origine/décodé : {trustworthiness_recomp}")
-    if is_one_channel:
-        print(f"| Trustworthiness origine/encodé : {trustworthiness_encoding}")
+    #if is_one_channel:
+    #    print(f"| Trustworthiness origine/encodé : {trustworthiness_encoding}")
 
     #affichage si matrice 2x2
     if z.shape[2]==2:
