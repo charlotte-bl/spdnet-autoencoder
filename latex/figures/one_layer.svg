@@ -24,9 +24,9 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:snap-intersection-paths="false"
-     inkscape:zoom="1.28"
-     inkscape:cx="349.60938"
-     inkscape:cy="218.35938"
+     inkscape:zoom="0.64"
+     inkscape:cx="296.09375"
+     inkscape:cy="280.46875"
      inkscape:window-width="1850"
      inkscape:window-height="1136"
      inkscape:window-x="70"
@@ -159,6 +159,20 @@
          d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
          style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:0.625;stroke-linejoin:round"
          id="path17857-92" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Arrow1Lstart-3"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow1Lstart"
+       inkscape:isstock="true">
+      <path
+         transform="matrix(0.8,0,0,0.8,10,0)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         id="path17836-6" />
     </marker>
   </defs>
   <g
@@ -512,5 +526,13 @@
          style="font-size:2.37738px;stroke-width:0.22288"
          x="71.328835"
          y="49.014301">ho matrices</tspan></text>
+    <g
+       id="g1099"
+       transform="matrix(0.59826514,0,0,0.53677648,18.596605,23.539039)">
+      <path
+         style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart-3)"
+         d="M 13.086417,61.361314 12.960754,50.988877 249.03187,49.755358 249.13466,41.70931"
+         id="path1202" />
+    </g>
   </g>
 </svg>

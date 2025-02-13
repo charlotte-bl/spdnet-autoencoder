@@ -24,9 +24,9 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:snap-intersection-paths="false"
-     inkscape:zoom="2.56"
-     inkscape:cx="953.71094"
-     inkscape:cy="181.83594"
+     inkscape:zoom="0.90509668"
+     inkscape:cx="486.68834"
+     inkscape:cy="14.915534"
      inkscape:window-width="1850"
      inkscape:window-height="1136"
      inkscape:window-x="70"
@@ -845,5 +845,9 @@
          d="m 46.516352,28.089353 v -6.572696 h 6.836572 6.83657 v 6.572696 6.572696 h -6.83657 -6.836572 z"
          id="path952-2-3-7" />
     </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart)"
+       d="M 13.086417,61.361314 12.960754,50.988877 249.03187,49.755358 249.13466,41.70931"
+       id="path1202" />
   </g>
 </svg>

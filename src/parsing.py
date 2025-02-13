@@ -60,7 +60,7 @@ def parsing_generation_data():
     parser.add_argument('-s','--size_block_matrices', type=int , default = 8, help='Size of one class of matrices you want to have. Beware that the effective size of the matrix will be twice this value, since we have two classes.')
     parser.add_argument('-n','--noise', default = 'none', help='Type of noise for the denoising. none if there is no noise.', choices=['none', 'gaussian', 'salt_pepper','masking'])
     parser.add_argument('-q','--number_matrices', type=int , default = 300, help='How many matrices are in each of your dataset.')
-    parser.add_argument('-e','--std', type=int , default = 1, help='Standard deviation of the noise if there is one.')
+    parser.add_argument('-e','--std', type=float , default = 0.01, help='Standard deviation of the noise if there is one.')
 
     args = parser.parse_args()
 

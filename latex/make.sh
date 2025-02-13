@@ -10,6 +10,8 @@ clean() {
     rm -f main.nav
     rm -f main.snm
     rm -f main.toc
+    rm -f main.bbl
+    rm -f main.blg
 }
 
 latex() {

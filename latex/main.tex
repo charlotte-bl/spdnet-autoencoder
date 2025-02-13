@@ -183,7 +183,7 @@ How to preserve the SPD matrix through the reconstitutions ?
 \begin{itemize}
     \item Autoencoder for SPD matrices for dimension reduction
     \item Layer to do the reverse operations of the autoencoder
-    \item Impact of distance for reconstruction error
+    \item Impact of loss for reconstruction error
 \end{itemize}
 \end{frame}
 %---------------------------------------------------------
@@ -216,8 +216,8 @@ How to preserve the SPD matrix through the reconstitutions ?
         \item For each matrix, we calculate the Riemannian distance with its reconstruction.
     \end{itemize}
     \begin{center}
-        $ \phi : \mathcal{X} \rightarrow \mathcal{F}$ \\
-        $ \psi : \mathcal{F} \rightarrow \mathcal{X}$ \\
+        $ \phi : \mathbb{R}^{n_i \times n_i} \rightarrow \mathbb{R}^{n_o \times n_o}$ \\
+        $ \psi : \mathbb{R}^{n_o \times n_o} \rightarrow \mathbb{R}^{n_i \times n_i}$ \\
         $ \phi,\psi = \arg\min\limits_{\phi,\psi} \delta^2_R(X,\psi (\phi(X))) =  \arg \min\limits_{\phi,\psi} ||\text{log}(X^{-1/2}\psi (\phi(X))X^{-1/2})||^2_F$
     \end{center}
     \end{frame}
