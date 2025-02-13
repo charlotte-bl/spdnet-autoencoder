@@ -49,21 +49,10 @@
 %---------------------------------------------------------
 \section{Context}
 %---
-\subsection{Use of SPD matrices}
-%---
-\begin{frame}
-\frametitle{Use of SPD matrices}
-    \begin{itemize}
-        \item Covariances matrices
-        \item Used in computer vision, brain imaging, brain-computer interface (EEG)
-    \end{itemize}
-\end{frame}
-
-%---
 \subsection{Works on SPD matrices}
 %---
 \begin{frame}
-\frametitle{A Riemannian Network for SPD Matrix Learning}
+\frametitle{SPDNet:A Riemannian Network for SPD Matrix Learning}
 Introduction of a network architecture that preserves the properties of positive definite matrices for Deep Learning \cite{DBLP:journals/corr/HuangG16}
 \begin{itemize}
     \item 3 different layers: BiMap, ReEig, LogEig
@@ -143,26 +132,8 @@ Introduction of a network architecture that preserves the properties of positive
     \end{itemize}
 \end{frame}
 %---
-\subsection{Problems}
+\subsection{Riemannian geometry}
 %---
-\begin{frame}
-    \frametitle{Existing solutions in Euclidean geometry}
-    \begin{itemize}
-    \item Flatten to tangent space
-    \item Distance approximation: Frobenius distance
-    $ L=||A-B||_F = \sqrt{\sum_{i,j}(A_{ij}-B_{ij})^2}$
-    \end{itemize}
-\end{frame}
-%-
-\begin{frame}
-\frametitle{Problems in Euclidean geometry}
-\begin{itemize}
-    \item Does not preserve the curvature of space
-    \item Non-optimal results with euclidean distance
-    \item Swelling effect : the determinants of the interpolation of flattened matrices
-    \end{itemize}
-\end{frame}
-%-
 \begin{frame}
     \frametitle{Riemannian geometry}
     Riemann metric \textit{(AIRM)}: $\delta^2_R(X,Y)$ = $||\text{log}(X^{-1/2}YX^{-1/2})||^2_F$
@@ -183,7 +154,7 @@ How to preserve the SPD matrix through the reconstitutions ?
 \begin{itemize}
     \item Autoencoder for SPD matrices for dimension reduction
     \item Layer to do the reverse operations of the autoencoder
-    \item Impact of loss for reconstruction error
+    \item Impact of Riamannian or Euclidean distance for reconstruction error
 \end{itemize}
 \end{frame}
 %---------------------------------------------------------
@@ -199,7 +170,7 @@ How to preserve the SPD matrix through the reconstitutions ?
 \begin{center}
     $ \phi : \mathcal{X} \rightarrow \mathcal{F}$ , encoder \\
     $ \psi : \mathcal{F} \rightarrow \mathcal{X}$ , decoder \\
-    $ \phi,\psi = \arg \min\limits_{\phi,\psi} || X-(\psi \circ \phi)X||^2$
+    $ \phi,\psi = \arg \min\limits_{\phi,\psi} || X-(\psi \circ \phi)(X)||^2$
 \end{center}
 \begin{center}
     \includesvg[width=0.6\textwidth]{figures/autoencoder.svg}
@@ -216,8 +187,10 @@ How to preserve the SPD matrix through the reconstitutions ?
         \item For each matrix, we calculate the Riemannian distance with its reconstruction.
     \end{itemize}
     \begin{center}
-        $ \phi : \mathbb{R}^{n_i \times n_i} \rightarrow \mathbb{R}^{n_o \times n_o}$ \\
-        $ \psi : \mathbb{R}^{n_o \times n_o} \rightarrow \mathbb{R}^{n_i \times n_i}$ \\
+        $ \phi : \mathcal{X} \rightarrow \mathcal{F}$ \\
+        $ \psi : \mathcal{F} \rightarrow \mathcal{X}$ \\
+        $ X \in \mathcal{X}$ is SPD \\
+        $ \psi (\phi(X)) \in \mathcal{X}$ is SPD \\
         $ \phi,\psi = \arg\min\limits_{\phi,\psi} \delta^2_R(X,\psi (\phi(X))) =  \arg \min\limits_{\phi,\psi} ||\text{log}(X^{-1/2}\psi (\phi(X))X^{-1/2})||^2_F$
     \end{center}
     \end{frame}
@@ -240,7 +213,7 @@ How to preserve the SPD matrix through the reconstitutions ?
 \begin{itemize}
     \item We use MDM (Minimum Distance to Mean) to know the accuracy before reconstituting our matrices.
     \item For each class, a centroid is estimated according to our distance.
-    \item We compare the initial accuracy with the final accuracy.
+    \item We compare the accuracy of original matrices and the accuracy of the reconstructions.
 \end{itemize}
 \end{frame}
 %---
@@ -378,7 +351,7 @@ $W_k$ is of full rank to guarantee that $X_k$ remains SPD.
 \begin{frame}
 \frametitle{Synthetic data}
 \begin{itemize}
-    \item We generate 
+    \item We generate data along a geodesic
 \end{itemize}
 \end{frame}
 
