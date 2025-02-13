@@ -7,6 +7,9 @@ clean() {
     rm -f main.log
     rm -f main.out
     rm -f main.pdf
+    rm -f main.nav
+    rm -f main.snm
+    rm -f main.toc
 }
 
 latex() {

@@ -128,7 +128,6 @@ class Autoencoder_layers_byhalf_SPDnet(nn.Module):
             current_channel = min(self.ho,current_channel*2)
             self.layer_sizes.append(current_size)
             self.channels_size.append(current_channel)
-
         # encoder
         encoder_layers = []
         for i in range(len(self.layer_sizes) - 1):

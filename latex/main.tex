@@ -1,10 +1,9 @@
 \documentclass{beamer}
 \usepackage[utf8]{inputenc}
-\usepackage{tikz}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{tikz-3dplot}
 \usepackage{svg}
+\usepackage{cite}
 
 \usetheme{Madrid}
 \usecolortheme{default}
@@ -13,9 +12,9 @@
 %This block of code defines the information to appear in the
 %Title page
 \title[AE SPDnet]
-{Apprendre des distributions sur les variétés riemanniennes}
+{Learning distributions on Riemannian manifolds}
 
-\subtitle{Auto encodeur pour matrices SPD}
+\subtitle{Autoencoder for SPD matrices}
 
 \author[CB]
 {Charlotte BOUCHERIE, Florian YGER, Thibault DE SURREL}
@@ -30,129 +29,183 @@
 \AtBeginSection[]
 {
   \begin{frame}
-    \frametitle{Table des matières}
+    \frametitle{Table of contents}
     \tableofcontents[currentsection]
   \end{frame}
 }
 
 %------------------------------------------------------------
-% Start of document -- Auto encodeur pour matrices SPD
+% Start of document -- Autoencoder for SPD matrices
 %------------------------------------------------------------
 \begin{document}
 
 \frame{\titlepage}
 
 \begin{frame}
-\frametitle{Table des matières}
+\frametitle{Table of contents}
 \tableofcontents
 \end{frame}
 
 %---------------------------------------------------------
-\section{Contexte}
+\section{Context}
 %---
-\subsection{Utilité matrices SPD}
+\subsection{Use of SPD matrices}
 %---
 \begin{frame}
-\frametitle{Utilité matrices SPD}
+\frametitle{Use of SPD matrices}
     \begin{itemize}
-        \item Matrices de covariances 
-        \item Utilisés dans differentes applications de ML : vision par ordinateur, imagerie cérébrale, interface cerveau/ordinateur (EEG)  
+        \item Covariances matrices
+        \item Used in computer vision, brain imaging, brain-computer interface (EEG)
     \end{itemize}
 \end{frame}
 %---
-\subsection{Différents travaux}
+\subsection{Problems}
 %---
 \begin{frame}
-\frametitle{A Riemannian Network for SPD Matrix Learning}
-\begin{itemize}
-\item Introduction d'une architecture de réseau qui conserve les propriétés des matrices définies positives pour le Deep Learning
-\item 3 couches différentes : BiMap, ReEig, LogEig
-\item On va se baser sur ces couches pour notre auto-encodeur
-\end{itemize}
-
-\end{frame}
-%-
-\begin{frame}
-\frametitle{Différents travaux}
-DreamNet: A Deep Riemannian Manifold Network for SPD Matrix Learning
-\begin{itemize}
-    \item Méthodologie pour créer des réseaux profonds
-\end{itemize}
-Riemannian Multinomial Logistics Regression for SPD Neural Networks
-\begin{itemize}
-    \item Adaptation de la régression logistique pour les matrices SPD
-    \item Nouvelle couche spécifique pour la classification
-\end{itemize}
-\end{frame}
-%-
-\subsection{Problèmes}
-%---
-\begin{frame}
-    \frametitle{Solutions existantes en géométrie euclidienne}
+    \frametitle{Existing solutions in Euclidean geometry}
     \begin{itemize}
-    \item Aplatissement de l'espace tangent
-    \item Approximation de la distance : distance de Frobenius
+    \item Flatten to tangent space
+    \item Distance approximation: Frobenius distance
     $ L=||A-B||_F = \sqrt{\sum_{i,j}(A_{ij}-B_{ij})^2}$
     \end{itemize}
 \end{frame}
 %-
-
 \begin{frame}
-\frametitle{Problèmes}
+\frametitle{Problems}
 \begin{itemize}
-\item Ne préserve pas la courbure de l'espace
-\item Résultats non-optimaux avec distance différente
-\item Effet de gonflement \textit{(swelling effect)} : les déterminants de l'interpollation des matrices applattis
-\end{itemize}
-On veut donc prendre en compte la courbure et la non-linéarité de l'espace des matrices SPD
+    \item Does not preserve the curvature of space
+    \item Non-optimal results with euclidean distance
+    \item Swelling effect : the determinants of the interpolation of flattened matrices
+    \end{itemize}
+    We therefore want to take into account the curvature and the non-linearity of the space of SPD matrices.
 \end{frame}
 %-
 \begin{frame}
-    \frametitle{Géométrie riemannienne}
-    Métrique de Riemann \textit{(AIRM)} : $\delta^2_R(X,Y)$ = $||\text{log}(X^{-1/2}YX^{-1/2})||^2_F$
+    \frametitle{Riemannian geometry}
+    Riemann metric \textit{(AIRM)}: $\delta^2_R(X,Y)$ = $||\text{log}(X^{-1/2}YX^{-1/2})||^2_F$
     \begin{itemize}
-    \item Permet de mesurer la similarité entre deux matrices SPD tout en respectant la structure
-    \item On l'utilisera dans notre AE dans le modèle, dans le coût et dans la confiance.
+    \item Measure the similarity between two SPD matrices while respecting the structure
+    \item We will use it in our AE in the model, in the cost function and in the trustworthiness.
     \end{itemize}
 \end{frame}
 %---
-\subsection{Objectifs}
+\subsection{Works on SPD matrices}
+%---
+\begin{frame}
+\frametitle{A Riemannian Network for SPD Matrix Learning}
+Introduction of a network architecture that preserves the properties of positive definite matrices for Deep Learning \cite{DBLP:journals/corr/HuangG16}
+\begin{itemize}
+    \item 3 different layers: BiMap, ReEig, LogEig
+    \item We will base ourselves on these layers for our autoencoder    
+\end{itemize}
+
+\end{frame}
 %-
 \begin{frame}
-\frametitle{Ce qu'on fait}
+    \frametitle{Different works}
+    DreamNet: A Deep Riemannian Manifold Network for SPD Matrix Learning \cite{wang2022dreamnetdeepriemanniannetwork}
+    \begin{itemize}
+        \item Methodology for creating deep networks
+        \item Stacked Riemannian Autoencoder (SRAE) at the end of the network
+    \end{itemize}
+    Riemannian Multinomial Logistics Regression for SPD Neural Networks \cite{chen2024riemannianmultinomiallogisticsregression}
+    \begin{itemize}
+        \item Adapting logistic regression for SPD matrices
+        \item New specific layer for classification
+        \item Use of Log-Euclidean Metric or Log-Cholesky Metric
+    \end{itemize}
+    SPD domain-specific batch normalization to crack interpretable unsupervised domain adaptation in EEG \cite{kobler2022spddomainspecificbatchnormalization}
+    \begin{itemize}
+        \item Specific batch normalization for SPD matrices
+    \end{itemize}
+\end{frame}
+%-
+\begin{frame}
+    Riemannian batch normalization for SPD neural networks \cite{brooks2019riemannianbatchnormalizationspd}
+    \begin{itemize}
+        \item Specific batch normalization for SPD matrices
+    \end{itemize}
+    A Riemannian Residual Learning Mechanism for SPD Network \cite{10651149}
+    \begin{itemize}
+        \item Improves learning process for SPD networks
+    \end{itemize}
+    \frametitle{Different works}
+    U-SPDNet: An SPD manifold learning-based neural network for visual classification \cite{WANG2023382}
+    \begin{itemize}
+        \item SPD matrices from visual data
+    \end{itemize}
+\end{frame}
+%-
+\begin{frame}
+    Reducing the Dimensionality of SPD Matrices with Neural Networks in BCI \cite{articledimension}
+    \begin{itemize}
+        \item Simplification of complex data for a better interpretability and processing in BCI data
+    \end{itemize}
+    Schur's Positive Definite Network: Deep Learning in the SPD Cone With Structure \cite{pouliquen:hal-04726325}
+    \begin{itemize}
+        \item Shows that the use of the structure in the network improves the performances
+    \end{itemize}
+    Modeling Graphs Beyond Hyperbolic: Graph Neural Networks in Symmetric Positive Definite Matrices \cite{zhao2023modelinggraphshyperbolicgraph}
+    \begin{itemize}
+        \item Applies GNN to SPD matrices
+        \item To model graph structures in SPD matrices
+    \end{itemize}
+\end{frame}
+%-
+\begin{frame}
+    SymNet: A Simple Symmetric Positive Definite Manifold Deep Learning Method for Image Set Classification \cite{9390301}
+    \begin{itemize}
+        \item Image set classification
+    \end{itemize}
+    From Manifold to Manifold: Geometry-Aware Dimensionality Reduction for SPD Matrices \cite{harandi2014manifoldmanifoldgeometryawaredimensionality}
+    \begin{itemize}
+        \item Lower-dimensional and more discriminative SPD matrices from SPD matrices with orthonormal projection
+    \end{itemize}
+    Geometry-Aware Principal Component Analysis for Symmetric Positive Definite Matrices \cite{articlepcaaspd}
+    \begin{itemize}
+        \item PCA applied to SPD matrices
+        \item Preserves more data variance
+        \item Extends PCA from Euclidean to Riemannian geometries
+    \end{itemize}
+\end{frame}
+
+%---
+\subsection{Objectives}
+%-
+\begin{frame}
+\frametitle{Objectives}
 \begin{itemize}
-    \item Auto-encodeur pour matrices SPD
-    \item Couche pour faire les opérations inverses de l'auto encodeur
-    \item Comparaison de différents modèles
-    \item Incidence de la distance pour l'erreur de reconstitution
+    \item Autoencoder for SPD matrices
+    \item Layer to do the reverse operations of the autoencoder
+    \item Comparison of different models
+    \item Impact of distance for reconstruction error
 \end{itemize}
 \end{frame}
 %---------------------------------------------------------
-\section{Auto-encodeur}
+\section{Autoencoder}
 \begin{frame}
-\frametitle{Principes de base de l'auto-encodeur}
-\begin{itemize}
-    \item Réseau de neurones
-    \item Apprentissage non supervisé : mesure de l'erreur de reconstitution
-    \item Réduction de dimensions
-    \item Apprends les paternes sous-jacents
-    \item Utilisés pour les modèles génératifs
+    \frametitle{Autoencoder Basics}
+    \begin{itemize}
+        \item Unsupervised learning: measurement of reconstruction error
+        \item Dimension reduction
+        \item Learn the underlying patterns
+        \item Used for generative models
 \end{itemize}
 \begin{center}
-    $ \phi : \mathcal{X} \rightarrow \mathcal{F}$ , l'encodeur \\
-    $ \psi : \mathcal{F} \rightarrow \mathcal{X}$ , le décodeur \\
+    $ \phi : \mathcal{X} \rightarrow \mathcal{F}$ , encoder \\
+    $ \psi : \mathcal{F} \rightarrow \mathcal{X}$ , decoder \\
     $ \phi,\psi = \arg \min\limits_{\phi,\psi} || X-(\psi \circ \phi)X||^2$
 \end{center}
 
 \end{frame}
 
 %---
-\subsection{Métriques}
+\subsection{Metrics}
 %--
 \begin{frame}
-    \frametitle{Perte de reconstitution}
+    \frametitle{Reconstruction error}
     \begin{itemize}
-        \item Pour chaque matrice, on calcule la distance riemannienne avec sa reconstitution.
+        \item For each matrix, we calculate the Riemannian distance with its reconstruction.
     \end{itemize}
     \begin{center}
         $ \phi : \mathcal{X} \rightarrow \mathcal{F}$ \\
@@ -162,12 +215,12 @@ On veut donc prendre en compte la courbure et la non-linéarité de l'espace des
     \end{frame}
     %-
 \begin{frame}
-\frametitle{Confiance}
+\frametitle{Trustworthiness}
 \begin{itemize}
-    \item Pour chaque matrice, on prend ses k matrices les plus proches dans l'espace de sortie et ses matrices les plus proches dans l'espace d'arrivée.
-    \item La distance est la même utilisée que pour calculer notre fonction de coût.
-    \item On pénalise proportionellement au rang différent dans l'espace d'entrée.
-    \item On ne pénalise pas les rapprochements.
+    \item For each matrix, we take its k closest matrices in the output space and its closest matrices in the input space.
+    \item The distance is the same used to calculate our cost function.
+    \item We penalize proportionally to the difference in ranks in the input space.
+    \item We do not penalize matrices coming closer together.
 \end{itemize}
 \begin{center}
     $ T(k) = 1 - \frac{2}{nk(2n-3k-1)} \sum\limits_{i=1}^n\sum\limits_{j\in\mathcal{N}_i^k} \max(0,(r(i,j)-k)) $
@@ -175,42 +228,42 @@ On veut donc prendre en compte la courbure et la non-linéarité de l'espace des
 \end{frame}
 %-
 \begin{frame}
-\frametitle{Précision}
+\frametitle{Accuracy}
 \begin{itemize}
-    \item On utilise la MDM (Minimum Distance to Mean) pour connaître la précision avant la reconstitution de nos matrices.
-    \item Pour chaque classe, un centroïde est estimé selon notre distance.
-    \item On compare la précision initiale avec la précision finale.
+    \item We use MDM (Minimum Distance to Mean) to know the precision before reconstituting our matrices.
+    \item For each class, a centroid is estimated according to our distance.
+    \item We compare the initial precision with the final precision.
 \end{itemize}
 \end{frame}
 %---
-\subsection{Couches}
+\subsection{Layers}
 %--
 
 \begin{frame}
-\frametitle{Couche BiMap}
+\frametitle{BiMap layer}
 \begin{itemize}
-    \item La fonction de cette couche est de générer des matrices SPD plus compactes et plus discrimantes.
-    \item On a donc une couche qui effectue une application bilinéaire $f_b$ pour transformer les matrices initiales en nouvelles matrices de dimension inférieure.
+    \item The function of this layer is to generate more compact and more discriminative SPD matrices.
+    \item Layer which performs a bilinear map $f_b$ to transform the initial matrices into new matrices of lower dimension.
 \end{itemize}
 
 \begin{center}
     $ X_k = f_b^{(k)}(X_{k-1};W_k)=W_kX_{k-1}W_k^T$
 \end{center}
 
-$W_k$ est de rang plein pour garantir que $X_k$ reste SPD.
+$W_k$ is of full rank to guarantee that $X_k$ remains SPD.
 
-\begin{block}{Paramètres dans le réseau}
-Nombre de filtres/canaux d'entrée \textit{hi}, nombre de filtres/canaux de sorties \textit{ho}, taille de la matrice d'entrée \textit{ni}, taille de la matrice de sortie \textit{no}
+\begin{block}{Network parameters}
+    Number of input filters/channels \textit{hi}, number of output filters/channels \textit{ho}, size of input matrix \textit{ni}, size of output matrix \textit{no}
 \end{block}
 
 
 \end{frame}
 %--
 \begin{frame}
-\frametitle{Couche ReEig}
+\frametitle{ReEig layer}
 \begin{itemize}
-    \item La fonction de cette couche est d'améliorer les performances discriminantes en introduisant une non linéarité, de la même manière que ReLU.
-    \item On introduit donc une fonction non-linéaire $f_r$ qui corrige les matrices en posant un seuil aux valeurs propres faibles. 
+    \item The function of this layer is to improve discriminative performance by introducing nonlinearity, in the same way as ReLU.
+    \item Introduction of a non-linear function $f_r$ which corrects the matrices by setting a threshold for low eigenvalues.
 \end{itemize}
 
 \begin{center}
@@ -221,10 +274,10 @@ Nombre de filtres/canaux d'entrée \textit{hi}, nombre de filtres/canaux de sort
 
 %--
 \begin{frame}
-\frametitle{Couche LogEig/ExpEig}
+\frametitle{LogEig/ExpEig layers}
 
 \begin{block}{LogEig}
-La fonction de cette couche est de pouvoir appliquer la géométrie de Riemann au matrice sortante.
+    The function of this layer is to be able to apply Riemann geometry to the output matrix.
 \end{block}
 
 \begin{center}
@@ -232,7 +285,7 @@ La fonction de cette couche est de pouvoir appliquer la géométrie de Riemann a
 \end{center}
 
 \begin{block}{ExpEig}
-La fonction de cette couche est d'appliquer la fonction inverse de la couche LogEig
+    The function of this layer is to apply the inverse function of the LogEig layer.
 \end{block}
 
 \begin{center}
@@ -241,14 +294,14 @@ La fonction de cette couche est d'appliquer la fonction inverse de la couche Log
 
 \end{frame}
 %---
-\subsection{Modèles}
+\subsection{Models}
 %--
 \begin{frame}
-\frametitle{Modèle : une couche}
+\frametitle{One layer}
 \begin{itemize}
-    \item On a une seule couche BiMap pour l'encodeur qui va de $ni\rightarrow no$ et de $hi\rightarrow ho$.
-    \item On regarde l'influence de la dimension de sortie et de la couche de sortie.
-    \item Le décodeur fait l'opération inverse.
+    \item Single BiMap layer for the encoder from $ni\rightarrow no$ and $hi\rightarrow ho$.
+    \item We look at the influence of the output dimension and the output layer.
+    \item The decoder does the opposite operation.
 \end{itemize}
 \begin{center}
     {\tiny
@@ -259,15 +312,15 @@ La fonction de cette couche est d'appliquer la fonction inverse de la couche Log
 \end{frame}
 
 \begin{frame}
-\frametitle{Modèle : filtres en entonnoir}
+\frametitle{Two layers with funnel channels}
 \begin{itemize}
-    \item On a deux couches BiMap.
+    \item Two BiMap layers.
         \begin{itemize}
-            \item $ni\rightarrow ni/2$ et de $hi\rightarrow ho$.
-            \item $ni/2\rightarrow no$ et de $ho\rightarrow hi$.
+            \item $ni\rightarrow ni/2$ and $hi\rightarrow ho$.
+            \item $ni/2\rightarrow no$ and $ho\rightarrow hi$.
         \end{itemize}
-    \item On regarde l'influence du nombre de filtres intermediaires et de la dimension de sortie.
-    \item Le décodeur fait l'opération inverse.
+        \item We look at the influence of the number of intermediate channels and the output dimension.
+        \item The decoder does the opposite operation.
 \end{itemize}
 \begin{center}
     {\tiny
@@ -279,11 +332,11 @@ La fonction de cette couche est d'appliquer la fonction inverse de la couche Log
 
 
 \begin{frame}
-\frametitle{Modèle : plusieurs couches régulières}
+\frametitle{Multiple layers evenly distributed}
 \begin{itemize}
-    \item Nombre de couches BiMap fixée en paramètres.
-    \item Canaux et tailles de matrices intermédiare en fonction d'un nombre de couches fixés.
-    \item Le décodeur fait l'opération inverse.
+    \item Number of BiMap layers set in parameters.
+    \item Channels and intermediate matrix sizes based on the number of layers.
+    \item The decoder does the opposite operation.
 \end{itemize}
 \begin{center}
     {\tiny
@@ -293,11 +346,11 @@ La fonction de cette couche est d'appliquer la fonction inverse de la couche Log
 \end{frame}
 
 \begin{frame}
-\frametitle{Modèle : taille de couches réduite de moitié}
+\frametitle{Multiple layers halved in dimension}
 \begin{itemize}
-    \item Nombre de couches BiMap et de filtres dans les couches dépend de $ni$ et $no$.
-    \item Taille de matrice divisé par deux , nombre de filtre multiplié par deux à chaque couche.
-    \item Le décodeur fait l'opération inverse.
+    \item Number of BiMap layers and filters in layers depends on $ni$ and $no$.
+    \item Matrix size divided by two, number of filters multiplied by two at each layer.
+    \item The decoder does the opposite operation.
 \end{itemize}
 \begin{center}
     {\tiny
@@ -306,65 +359,68 @@ La fonction de cette couche est d'appliquer la fonction inverse de la couche Log
 \end{center}
 
 \end{frame}
-
-
-
-
 %---------------------------------------------------------
 
-\section{Résultats}
+\section{Results}
 %---
 
 %---
-\subsection{Données synthétiques}
+\subsection{Synthetic data}
 %--
 \begin{frame}
-\frametitle{Données synthétiques}
-
-\end{frame}
-
-%---
-\subsection{Données BCI}
-%--
-
-\begin{frame}
-\frametitle{Données BCI}
+\frametitle{Synthetic data}
 
 \end{frame}
 
 %--
 \begin{frame}
-\frametitle{Ajout de bruits}
+    \frametitle{Adding noises}
+    
+    \end{frame}
+    %-
+    \begin{frame}
+    \frametitle{Gaussian noise}
+    
+    \end{frame}
+    
+    %-
+    \begin{frame}
+    \frametitle{Salt and pepper noise}
+    
+    \end{frame}
+    
+    %-
+    \begin{frame}
+    \frametitle{Masking noise}
+    
+    \end{frame}
+
+
+\subsection{BCI data}
+%--
+
+\begin{frame}
+\frametitle{BCI data}
 
 \end{frame}
-%-
-\begin{frame}
-\frametitle{Bruit gaussien}
-
-\end{frame}
 
 %-
 \begin{frame}
-\frametitle{Bruit poivre et sel}
-
-\end{frame}
-
-%-
-\begin{frame}
-\frametitle{Bruit de masquage}
-
-\end{frame}
-
-%-
-\begin{frame}
-\frametitle{Résumé}
+\frametitle{Results}
 \begin{itemize}
-    \item On prédit moins bien les données après le passage dans l'auto-encodeur
-    \item On conserve les voisinages
-    \item On compresse avec perte
+    \item Prediction less accurate
+    \item The more we preserve the neighborhood, the worse the accuracy becomes.
+    \item Lossy compression
 \end{itemize}
+Accuracy is already good without the autoencoding. We should try with a dataset
 \end{frame}
 
+
+\begin{frame}[allowframebreaks]
+    \frametitle{References}
+    \bibliographystyle{plain}
+    \bibliography{bibtex}
+  \end{frame}
 
 %---------------------------------------------------------
 \end{document}
