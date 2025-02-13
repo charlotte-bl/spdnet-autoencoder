@@ -128,7 +128,7 @@ You still have to change the parameters you need in the code in compare_models.p
 
 ### Run a Pipeline
 
-To test the influence of latent dimensions, run one of the provided pipeline script:
+To test the influence of latent dimensions, please transform it into an executable with chmod and run it directly.
 
 ```bash
 chmod +x run_pipeline_synthetic.sh
@@ -139,5 +139,6 @@ chmod +x run_pipeline_synthetic.sh
 chmod +x run_pipeline_bci.sh
 ./run_pipeline_bci.sh
 ```
+
 
 This will execute the pipeline to train multiple models with one command.
