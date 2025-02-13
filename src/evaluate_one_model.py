@@ -73,13 +73,14 @@ if __name__ == '__main__':
     epochs = 200
     channels_out = [1,2,3,4,5,6,7,8]
     loss_type = "riemann"
-    layers_type = "by_halves"
+    layers_type = "regular"
     data = "bci"
     batch_size=32
     noise="none"
+    number_layers=4
     encoding_dims= [2, 4, 6, 8, 10, 12, 14, 16]
-    nb_xp = 5
+    nb_xp = 2
     nb_datasets = 1
 
     for channel in channels_out:
-        evaluate_encoding_dim_influence(epochs=epochs,encoding_dims=encoding_dims,channels_out=channel,loss_type=loss_type,layers_type=layers_type,data=data,noise=noise,batch_size=batch_size,nb_datasets=nb_datasets,nb_xp=nb_xp)
+        evaluate_encoding_dim_influence(epochs=epochs,encoding_dims=encoding_dims,channels_out=channel,loss_type=loss_type,layers_type=layers_type,number_layers=number_layers,data=data,noise=noise,batch_size=batch_size,nb_datasets=nb_datasets,nb_xp=nb_xp)

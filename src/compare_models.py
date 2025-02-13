@@ -53,10 +53,11 @@ if __name__ == '__main__':
     #fixed parameters of the model
     epochs = 200
     losses = [c.parsing_loss_riemann] #,c.parsing_loss_euclid]
-    layers_type = ["by_halves"]
+    layers_type = ["regular"]
     data = "bci"
+    number_layers=4
     batch_size=32
     noise="none"
     channels_out= [1, 2, 3, 4, 5,6,7,8]
 
-    compare_channels_encoding(epochs=epochs,channels_out=channels_out,losses=losses,layers_type=layers_type,data=data,noise=noise,batch_size=batch_size)
+    compare_channels_encoding(epochs=epochs,channels_out=channels_out,losses=losses,layers_type=layers_type,number_layers=number_layers,data=data,noise=noise,batch_size=batch_size)

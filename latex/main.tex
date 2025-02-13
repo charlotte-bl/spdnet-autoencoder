@@ -382,30 +382,17 @@ $W_k$ is of full rank to guarantee that $X_k$ remains SPD.
 
 %--
 \begin{frame}
-    \frametitle{Adding noises}
+    \frametitle{Denoising autoencoder}
     
-    \end{frame}
-    %-
-    \begin{frame}
+\end{frame}
+%-
+\begin{frame}
     \frametitle{Gaussian noise}
     
-    \end{frame}
-    
-    %-
-    \begin{frame}
-    \frametitle{Salt and pepper noise}
-    
-    \end{frame}
-    
-    %-
-    \begin{frame}
-    \frametitle{Masking noise}
-    
-    \end{frame}
-
-
+\end{frame}
+%---
 \subsection{BCI data}
-%--
+%---
 
 \begin{frame}
 \frametitle{BCI data}
@@ -414,21 +401,29 @@ $W_k$ is of full rank to guarantee that $X_k$ remains SPD.
 
 %-
 \begin{frame}
-\frametitle{Results}
-\begin{itemize}
-    \item Prediction less accurate
-    \item The more we preserve the neighborhood, the worse the accuracy becomes.
-    \item Lossy compression
-\end{itemize}
-Accuracy is already good without the autoencoding. We should try with a dataset
+    \frametitle{Results}
+    \begin{itemize}
+        \item Prediction less accurate
+        \item The more we preserve the neighborhood, the worse the accuracy becomes.
+        \item Lossy compression
+    \end{itemize}
+\end{frame}
+%-
+\begin{frame}
+    \frametitle{Ideas}
+    \begin{itemize}
+        \item Dataset with more complex datas 
+        \item Influence of dropout layer/masking noise
+    \end{itemize}
 \end{frame}
 
-
+%---------------------------------------------------------
 \begin{frame}[allowframebreaks]
     \frametitle{References}
     \bibliographystyle{plain}
     \bibliography{bibtex}
-  \end{frame}
+\end{frame}
+
 
 %---------------------------------------------------------
 \end{document}
