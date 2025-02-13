@@ -11,7 +11,7 @@ def add_gaussian_noise_to_covariances(cov,std=1):
     cov_noisy = torch.empty(0, 1, cov.shape[2], cov.shape[3])
     for i in range(cov.shape[0]):
         scale = torch.max(torch.abs(cov[i][0]))
-        epsilon = torch.randn(cov.shape[2], cov.shape[3]) * std * scale * 1e-1
+        epsilon = torch.randn(cov.shape[2], cov.shape[3]) * std * scale
         noise = epsilon @ epsilon.T
         
         cov_noisy =  torch.cat((cov_noisy, (cov[i][0] + noise).unsqueeze(0).unsqueeze(0)) ,dim=0)

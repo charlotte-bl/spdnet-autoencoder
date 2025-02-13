@@ -23,7 +23,7 @@ def parsing_pipeline():
     parser.add_argument('-b','--batch_size', type=int , default = 32, help='Size of the batch for train/val/test')
     parser.add_argument('-t', '--synthetic_generation', default='block_diag', help ="Which generation method to use for the model", choices = [c.parsing_synthetic_data_geodesics, c.parsing_synthetic_data_block_diag, c.parsing_synthetic_data_lambda_mu])
     parser.add_argument('-n','--noise', default = 'none', help='Type of noise for the denoising. none if there is no noise.', choices=['none', 'gaussian', 'salt_pepper','masking'])
-    parser.add_argument('--std', default='1', type=int, help ="Standard deviation of the noise")
+    parser.add_argument('--std', default='0.01', type=float, help ="Standard deviation of the noise")
     parser.add_argument('-i', '--index', default='1', type=int, help ="Index of the synthetic data")
     
     args = parser.parse_args()
