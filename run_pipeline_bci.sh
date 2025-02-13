@@ -10,7 +10,7 @@ for i in $(seq 1 $xp); do
 		for channel in "${encoding_channels[@]}"; do
 			echo "XP $i :"
 			echo " | Parameters : encoding_dim = $dim , encoding_channel = $channel , "
-			python3 pipeline.py --encoding_dim "$dim" --epochs 200 --data bci --encoding_channel "$channel" --loss riemann --layers_type regular --layers 4
+			python3 pipeline.py --encoding_dim "$dim" --epochs 200 --data bci --encoding_channel "$channel" --loss riemann --layers_type regular --layers 4 --noise gaussian
 		done
     done
 done

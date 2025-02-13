@@ -2,6 +2,7 @@ import argparse
 import sys
 import config as c
 
+#pipeline.py
 def parsing_pipeline():
     #load parsing argument
     parser = argparse.ArgumentParser(description='Train model')
@@ -50,6 +51,7 @@ def parsing_pipeline():
     
     return args
 
+#generate_synthetic_data.py
 def parsing_generation_data():
     parser = argparse.ArgumentParser(description='Data generation')
     parser.add_argument('-t', '--synthetic_generation', default='block_diag', help ="Which generation method to use for the model", choices = [c.parsing_synthetic_data_geodesics, c.parsing_synthetic_data_block_diag, c.parsing_synthetic_data_lambda_mu])
