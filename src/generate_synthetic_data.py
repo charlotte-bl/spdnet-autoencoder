@@ -97,10 +97,10 @@ def generate_dataset_geodesics(number_matrices,size_matrices,batch_size,noise,st
     """
     # Generate two random matrices with opposite eigenvalue distributions
     M1, M2 = sample_opposite_matrices(size_matrices)
-    
+    M3, M4 = sample_opposite_matrices(size_matrices)
     # Sample geodesic points for each class
     class_1_matrices = sample_geodesic_points(M1, M2, number_matrices)
-    class_2_matrices = sample_geodesic_points(M2, M1, number_matrices)
+    class_2_matrices = sample_geodesic_points(M3, M4, number_matrices)
 
     # Labels: 0 for class 1, 1 for class 2
     labels_class_1 = np.repeat(['class_0'], number_matrices)

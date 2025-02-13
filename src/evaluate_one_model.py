@@ -79,7 +79,7 @@ if __name__ == '__main__':
     noise="none"
     number_layers=4
     encoding_dims= [2, 4, 6, 8, 10, 12, 14, 16]
-    nb_xp = 2
+    nb_xp = 3
     nb_datasets = 1
 
     for channel in channels_out:
