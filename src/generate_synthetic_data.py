@@ -7,6 +7,8 @@ from scipy.linalg import block_diag
 import numpy as np
 import torch
 from parsing import parsing_generation_data
+from geodesic.utils_geodesic import sample_geodesic_points,sample_opposite_matrices
+import config as c
 
 # generation data based with one class
 
@@ -36,7 +38,7 @@ def generate_synthetic_data_block_diag(number_matrices,size_matrices,batch_size,
 def generate_datasets_block_diag(number_dataset,number_matrices,size_matrices,batch_size,noise,std):
     for _ in range(number_dataset):
         train_loader, val_loader, test_loader = generate_synthetic_data_block_diag(number_matrices=number_matrices,size_matrices=size_matrices,batch_size=batch_size,noise=noise,std=std)
-        save_synthetic_data(train_loader, val_loader, test_loader,name="block_diag")
+        save_synthetic_data(train_loader, val_loader, test_loader,name=c.parsing_synthetic_data_block_diag)
 
 # generation data based on lambda and mu
 
@@ -78,14 +80,54 @@ def generate_synthetic_data_lambda_mu(number_matrices,size_matrices,batch_size,n
 def generate_datasets_lambda_mu(number_dataset,number_matrices,size_matrices,batch_size,noise,std):
     for _ in range(number_dataset):
         train_loader, val_loader, test_loader = generate_synthetic_data_lambda_mu(number_matrices=number_matrices,size_matrices=size_matrices,batch_size=batch_size,noise=noise,std=std)
-        save_synthetic_data(train_loader, val_loader, test_loader,name="lambda_mu")
+        save_synthetic_data(train_loader, val_loader, test_loader,name=c.parsing_synthetic_data_lambda_mu)
+
+# generation data on geodesics
+def generate_dataset_geodesics(number_matrices,size_matrices,batch_size,noise,std):
+    """
+    Generate a dataset where two classes follow different geodesics.
+    
+    Parameters:
+    - size_matrices (int): The dimension of the square matrices.
+    - n_samples (int): Total number of samples (should be twice the number of points per class).
+    - number_matrices (int): Number of points to sample for each class.
+    
+    Returns:
+    - dataset: A `LabeledDataset` containing the matrices and labels.
+    """
+    # Generate two random matrices with opposite eigenvalue distributions
+    M1, M2 = sample_opposite_matrices(size_matrices)
+    
+    # Sample geodesic points for each class
+    class_1_matrices = sample_geodesic_points(M1, M2, number_matrices)
+    class_2_matrices = sample_geodesic_points(M2, M1, number_matrices)
+
+    # Labels: 0 for class 1, 1 for class 2
+    labels_class_1 = np.repeat(['class_0'], number_matrices)
+    labels_class_2 = np.repeat(['class_1'], number_matrices)
+    
+    # Combine class data and labels
+    data = np.concatenate((class_1_matrices, class_2_matrices), axis=0)
+    labels = np.concatenate((labels_class_1, labels_class_2), axis=0)
+
+    data = np.expand_dims(data, axis=1)
+    data_tensor = torch.tensor(data, dtype=torch.double)
+
+    train_loader, val_loader, test_loader = preprocess_data_cov(data_tensor,labels,batch_size,noise,std)
+    save_synthetic_data(train_loader, val_loader, test_loader,name=c.parsing_synthetic_data_geodesics)
+
+def generate_datasets_geodesics(number_dataset,number_matrices,size_matrices,batch_size,noise,std):
+    for _ in range(number_dataset):
+        generate_dataset_geodesics(number_matrices,size_matrices,batch_size,noise,std)
 
 # generation of datasets
 
 def main():
     args=parsing_generation_data()
-    if args.synthetic_generation == "lambda_mu":
+    if args.synthetic_generation == c.parsing_synthetic_data_lambda_mu:
         generate_datasets_lambda_mu(number_dataset=args.number_dataset,number_matrices=args.number_matrices,size_matrices=args.size_block_matrices,batch_size=args.batch_size,noise=args.noise,std=args.std)
+    elif args.synthetic_generation == c.parsing_synthetic_data_geodesics:
+        generate_datasets_geodesics(number_dataset=args.number_dataset,number_matrices=args.number_matrices,size_matrices=args.size_block_matrices,batch_size=args.batch_size,noise=args.noise,std=args.std)
     else:
         generate_datasets_block_diag(number_dataset=args.number_dataset,number_matrices=args.number_matrices,size_matrices=args.size_block_matrices,batch_size=args.batch_size,noise=args.noise,std=args.std)
 

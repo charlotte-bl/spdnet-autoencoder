@@ -7,6 +7,9 @@ synthetic_data_extension = ".pt"
 parsing_loss_riemann = "riemann"
 parsing_loss_euclid = "euclid"
 
+parsing_synthetic_data_block_diag = "block_diag"
+parsing_synthetic_data_lambda_mu = "lambda_mu"
+parsing_synthetic_data_geodesics = "geodesics"
 
 
 #name for folders with performance of a model
@@ -17,7 +20,6 @@ models_information_model = "_models-"
 #name for result folders
 results_folder = "../evaluation_model/"
 results_base_name = "experience"
-
 
 models_information_n_epochs  = "_n-epochs-"
 models_information_encoding_dim = "_encoding-dim-"
