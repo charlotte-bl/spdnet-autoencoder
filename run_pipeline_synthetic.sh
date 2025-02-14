@@ -1,6 +1,6 @@
 #!/bin/bash
 
-encoding_dims=(2 4 6 8 10 12 14 16)
+encoding_dims=(2 4 6 8)
 encoding_channels=(1 2 4 8)
 xp=2
 datasets=(2)

@@ -52,7 +52,7 @@
 \subsection{Works on SPD matrices}
 %---
 \begin{frame}
-\frametitle{SPDNet:A Riemannian Network for SPD Matrix Learning}
+\frametitle{A Riemannian Network for SPD Matrix Learning: SPDnet}
 Introduction of a network architecture that preserves the properties of positive definite matrices for Deep Learning \cite{DBLP:journals/corr/HuangG16}
 \begin{itemize}
     \item 3 different layers: BiMap, ReEig, LogEig
@@ -284,16 +284,18 @@ $W_k$ is of full rank to guarantee that $X_k$ remains SPD.
     \item We look at the influence of the output dimension and the output layer.
     \item The decoder does the opposite operation.
 \end{itemize}
-\begin{center}
+\begin{figure}
+    \centering
     {\tiny
     \includesvg[width=0.9\textwidth]{figures/one_layer.svg}
+    \caption{Model architecture for an autoencoder with one layer}
     }
-\end{center}
+\end{figure}
 
 \end{frame}
 
 \begin{frame}
-\frametitle{Two layers with funnel channels}
+\frametitle{Two layers with mirror channels}
 \begin{itemize}
     \item Two BiMap layers.
         \begin{itemize}
@@ -303,11 +305,13 @@ $W_k$ is of full rank to guarantee that $X_k$ remains SPD.
         \item We look at the influence of the number of intermediate channels and the output dimension.
         \item The decoder does the opposite operation.
 \end{itemize}
-\begin{center}
+\begin{figure}
+    \centering
     {\tiny
     \includesvg[width=\textwidth]{figures/hourglass_channel.svg}
+    \caption{Model architecture for an autoencoder with two layers and mirror channels}
     }
-\end{center}
+\end{figure}
 
 \end{frame}
 
@@ -319,11 +323,13 @@ $W_k$ is of full rank to guarantee that $X_k$ remains SPD.
     \item Channels and intermediate matrix sizes based on the number of layers.
     \item The decoder does the opposite operation.
 \end{itemize}
-\begin{center}
+\begin{figure}
+    \centering
     {\tiny
     \includesvg[width=\textwidth]{figures/regular.svg}
+    \caption{Model architecture for an autoencoder with multiple layers evenly distributed}
     }
-\end{center}
+\end{figure}
 \end{frame}
 
 \begin{frame}
@@ -338,7 +344,7 @@ $W_k$ is of full rank to guarantee that $X_k$ remains SPD.
     {\tiny
     \includesvg[width=\textwidth]{figures/by_halves.svg}
     }
-    \caption{Autoencoder model with multiple layers halved in dimension}
+    \caption{Model architecture for an autoencoder with multiple layers halved in dimension}
 \end{figure}
 
 \end{frame}
@@ -354,11 +360,23 @@ $W_k$ is of full rank to guarantee that $X_k$ remains SPD.
 \frametitle{Synthetic data}
 \begin{itemize}
     \item We generate data along a geodesic
+    \item 300 SPD matrices
+    \item Matrices dimensions : $8 \times 8$
+    \item 1/2 for training, 1/4 for validation, 1/4 for testing
+    \item 2 classes : following different geodesics
 \end{itemize}
 \end{frame}
 
 %--
-
+\begin{frame}
+    \frametitle{One layer}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.4\textwidth]{figures/acc_no_noise_geodesics.png}
+        \includegraphics[width=0.4\textwidth]{figures/trustworthiness_geodesics.png}
+        \caption{Accuracy and trustworthiness in function of encoding dimensions for different encoding channels with one layer}
+    \end{figure}
+\end{frame}
 %---
 \subsection{BCI data}
 %---
@@ -370,8 +388,19 @@ $W_k$ is of full rank to guarantee that $X_k$ remains SPD.
         \item Subject: 8
         \item 144 data samples for training and 144 for testing
         \item 1/3 of the training data used for validation
-        \item Matrix dimensions: $22 \times 22$
+        \item Covariances matrices dimensions: $22 \times 22$
+        \item 2 classes : right hand / left hand
     \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Multiple layers evenly distributed}
+    We fixed the number of layers = 4
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth]{figures/acc_no_noise_regular_layers.png}
+        \caption{Accuracy in function of encoding dimensions for different encoding channels with regular split layers}
+    \end{figure}
 \end{frame}
     
 
@@ -407,9 +436,11 @@ $W_k$ is of full rank to guarantee that $X_k$ remains SPD.
 \end{frame}
 
 \begin{frame}
-    \begin{center}
-        \includegraphics[width=\textwidth]{figures/acc.png}
-    \end{center}
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{figures/acc_noise_regular.png}
+        \caption{Accuracy in function of encoding dimensions for different encoding channels with noised data with regular split layers}
+    \end{figure}
 \end{frame}
 
 %-

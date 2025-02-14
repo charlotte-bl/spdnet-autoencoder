@@ -56,15 +56,16 @@ def compare_channels_encoding(epochs, channels_out, losses, layers_type, data, n
 
 if __name__ == '__main__':
     #fixed parameters of the model
-    epochs = 200
+    epochs = 150
     losses = [c.parsing_loss_riemann] #,c.parsing_loss_euclid]
-    layers_type = ["regular"]
-    data = "bci"
-    number_layers=4
-    batch_size=32
-    noise="gaussian"
-    std=0.01
+    layers_type = ["one_layer"]
+    data = "synthetic"
+    generation="geodesics"
+    number_layers=None
+    batch_size=None
+    noise="none"
+    std=None
 
-    channels_out= [1, 2, 3, 4, 5,6,7,8]
+    channels_out= [1, 2, 4, 8]
 
-    compare_channels_encoding(epochs=epochs,channels_out=channels_out,losses=losses,layers_type=layers_type,number_layers=number_layers,data=data,noise=noise,batch_size=batch_size,std=0.01)
+    compare_channels_encoding(epochs=epochs,channels_out=channels_out,losses=losses,layers_type=layers_type,number_layers=number_layers,data=data,noise=noise,batch_size=batch_size,std=std,generation=generation)

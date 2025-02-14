@@ -70,18 +70,19 @@ def evaluate_encoding_dim_influence(epochs,encoding_dims,channels_out,loss_type,
 
 if __name__ == '__main__':
     #fixed parameters of the model
-    epochs = 200
-    channels_out = [1,2,3,4,5,6,7,8]
+    epochs = 150
+    channels_out = [1, 2, 4, 8] # [2,3,4,5,6,7,8]
     loss_type = "riemann"
-    layers_type = "regular"
-    data = "bci"
-    batch_size=32
-    noise="gaussian"
-    number_layers=4
-    encoding_dims= [2, 4, 6, 8, 10, 12, 14, 16]
-    nb_xp = 3
+    layers_type = "one_layer"
+    data = "synthetic"
+    batch_size=None
+    generation="geodesics"
+    noise="none"
+    number_layers=None
+    encoding_dims= [2, 4, 6, 8] #, 10, 12, 14, 16]
+    nb_xp = 1
     nb_datasets = 1
-    std=0.01
+    std=None
 
     for channel in channels_out:
-        evaluate_encoding_dim_influence(epochs=epochs,encoding_dims=encoding_dims,channels_out=channel,loss_type=loss_type,layers_type=layers_type,number_layers=number_layers,data=data,noise=noise,batch_size=batch_size,nb_datasets=nb_datasets,nb_xp=nb_xp,std=std)
+        evaluate_encoding_dim_influence(epochs=epochs,encoding_dims=encoding_dims,channels_out=channel,loss_type=loss_type,layers_type=layers_type,number_layers=number_layers,data=data,noise=noise,batch_size=batch_size,nb_datasets=nb_datasets,nb_xp=nb_xp,std=std,generation=generation)
