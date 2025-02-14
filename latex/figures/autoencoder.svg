@@ -25,7 +25,7 @@
      showgrid="false"
      inkscape:zoom="0.64052329"
      inkscape:cx="397.33138"
-     inkscape:cy="561.25984"
+     inkscape:cy="120.99482"
      inkscape:window-width="1850"
      inkscape:window-height="1136"
      inkscape:window-x="70"
@@ -86,38 +86,38 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:3.34832px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.228294"
-       x="14.106281"
+       x="14.875191"
        y="83.377235"
        id="text6119"
-       transform="scale(0.96629754,1.0348779)"><tspan
+       transform="scale(0.96629755,1.0348779)"><tspan
          sodipodi:role="line"
          id="tspan6117"
          style="font-size:3.34832px;stroke-width:0.228294"
-         x="14.106281"
+         x="14.875191"
          y="83.377235">encoder</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:3.34832px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.228294"
-       x="75.456192"
+       x="75.948654"
        y="69.658058"
        id="text6321"
-       transform="scale(0.96629754,1.0348779)"><tspan
+       transform="scale(0.96629755,1.0348779)"><tspan
          sodipodi:role="line"
          id="tspan6319"
          style="font-size:3.34832px;stroke-width:0.228294"
-         x="75.456192"
+         x="75.948654"
          y="69.658058">code</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:3.34832px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.228294"
-       x="131.06752"
+       x="131.28352"
        y="83.377235"
        id="text6655"
-       transform="scale(0.96629754,1.0348779)"><tspan
+       transform="scale(0.96629755,1.0348779)"><tspan
          sodipodi:role="line"
          id="tspan6653"
          style="font-size:3.34832px;stroke-width:0.228294"
-         x="131.06752"
+         x="131.28352"
          y="83.377235">decoder</tspan></text>
     <text
        xml:space="preserve"
@@ -181,6 +181,6 @@
          id="tspan14938"
          style="stroke-width:0.228294"
          x="123.72661"
-         y="129.89014"></tspan></text>
+         y="129.89014" /></text>
   </g>
 </svg>
