@@ -333,11 +333,13 @@ $W_k$ is of full rank to guarantee that $X_k$ remains SPD.
     \item Matrix size divided by two, number of filters multiplied by two at each layer.
     \item The decoder does the opposite operation.
 \end{itemize}
-\begin{center}
+\begin{figure}
+    \centering
     {\tiny
     \includesvg[width=\textwidth]{figures/by_halves.svg}
     }
-\end{center}
+    \caption{Autoencoder model with multiple layers halved in dimension}
+\end{figure}
 
 \end{frame}
 %---------------------------------------------------------
@@ -356,33 +358,60 @@ $W_k$ is of full rank to guarantee that $X_k$ remains SPD.
 \end{frame}
 
 %--
-\begin{frame}
-    \frametitle{Denoising autoencoder}
-    
-\end{frame}
-%-
-\begin{frame}
-    \frametitle{Gaussian noise}
-    
-\end{frame}
+
 %---
 \subsection{BCI data}
 %---
 
 \begin{frame}
-\frametitle{BCI data}
-
-\end{frame}
-
-%-
-\begin{frame}
-    \frametitle{Results}
+    \frametitle{BCI Data}
     \begin{itemize}
-        \item Prediction less accurate
-        \item The more we preserve the neighborhood, the worse the accuracy becomes.
-        \item Lossy compression
+        \item Dataset: BNCI2014\_001
+        \item Subject: 8
+        \item 144 data samples for training and 144 for testing
+        \item 1/3 of the training data used for validation
+        \item Matrix dimensions: $22 \times 22$
     \end{itemize}
 \end{frame}
+    
+
+\begin{frame}
+    \frametitle{Denoising autoencoder}
+    \begin{center}
+        $ \phi : \mathcal{X} \rightarrow \mathcal{F}$ , encoder \\
+        $ \psi : \mathcal{F} \rightarrow \mathcal{X}$ , decoder \\
+        $ X' = X + noise $ \\
+        $ \phi,\psi = \arg \min\limits_{\phi,\psi} || X-(\psi \circ \phi)(X')||^2$ \\
+    \end{center}
+    \begin{itemize}
+        \item We train the model with noised datas
+        \item We calculate the reconstruction error between the initial data (before adding noise) and the reconstruction
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Gaussian noise on EEG data}
+    \begin{itemize}
+        \item We add symmetric Gaussian noise $\epsilon \epsilon^T$ to each of our initial matrices.
+        \item We lose accuracy.
+    \end{itemize}
+    
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.3\textwidth]{figures/channel4_encoding_dim10_example_input_test.png}
+        \includegraphics[width=0.3\textwidth]{figures/channel4_encoding_dim10_example_noised_test.png}
+        \includegraphics[width=0.3\textwidth]{figures/channel4_encoding_dim10_example_reconstruction_test.png}
+        \caption{Effect of Gaussian noise on EEG data: (Left) Original input, (Middle) Noised data, (Right) Reconstruction after noise removal.}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \includegraphics[width=\textwidth]{figures/acc.png}
+    \end{center}
+\end{frame}
+
 %-
 \begin{frame}
     \frametitle{Ideas}
