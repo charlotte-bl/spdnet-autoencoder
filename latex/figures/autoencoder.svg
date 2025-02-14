@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="155mm"
+   height="91mm"
+   viewBox="0 0 155 91"
+   version="1.1"
+   id="svg1210"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   sodipodi:docname="autoencoder.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1212"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.64052329"
+     inkscape:cx="397.33138"
+     inkscape:cy="561.25984"
+     inkscape:window-width="1850"
+     inkscape:window-height="1136"
+     inkscape:window-x="70"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1207" />
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#87aade;stroke:#000000;stroke-width:0.111769;stroke-linecap:round"
+       id="rect1293"
+       width="24.251135"
+       height="68.375084"
+       x="8.9246168"
+       y="12.405434" />
+    <rect
+       style="fill:#87aade;stroke:#000000;stroke-width:0.111769;stroke-linecap:round"
+       id="rect1293-3"
+       width="24.251135"
+       height="68.375084"
+       x="121.41128"
+       y="12.405434" />
+    <rect
+       style="fill:#87aade;stroke:#000000;stroke-width:0.0723904;stroke-linecap:round"
+       id="rect1293-6"
+       width="17.26203"
+       height="40.295284"
+       x="68.662514"
+       y="26.445335" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:9.13174px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.228294"
+       x="17.550953"
+       y="9.6306667"
+       id="text2069"
+       transform="scale(0.96629754,1.0348779)"><tspan
+         sodipodi:role="line"
+         id="tspan2067"
+         style="stroke-width:0.228294"
+         x="17.550953"
+         y="9.6306667">$\phi$</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:9.13174px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.228294"
+       x="136.19244"
+       y="9.8013697"
+       id="text3987"
+       transform="scale(0.96629754,1.0348779)"><tspan
+         sodipodi:role="line"
+         id="tspan3985"
+         style="stroke-width:0.228294"
+         x="136.19244"
+         y="9.8013697">$\psi$</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:3.34832px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.228294"
+       x="14.106281"
+       y="83.377235"
+       id="text6119"
+       transform="scale(0.96629754,1.0348779)"><tspan
+         sodipodi:role="line"
+         id="tspan6117"
+         style="font-size:3.34832px;stroke-width:0.228294"
+         x="14.106281"
+         y="83.377235">encoder</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:3.34832px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.228294"
+       x="75.456192"
+       y="69.658058"
+       id="text6321"
+       transform="scale(0.96629754,1.0348779)"><tspan
+         sodipodi:role="line"
+         id="tspan6319"
+         style="font-size:3.34832px;stroke-width:0.228294"
+         x="75.456192"
+         y="69.658058">code</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:3.34832px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.228294"
+       x="131.06752"
+       y="83.377235"
+       id="text6655"
+       transform="scale(0.96629754,1.0348779)"><tspan
+         sodipodi:role="line"
+         id="tspan6653"
+         style="font-size:3.34832px;stroke-width:0.228294"
+         x="131.06752"
+         y="83.377235">decoder</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:9.13174px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.228294"
+       x="77.285172"
+       y="49.344219"
+       id="text7729"
+       transform="scale(0.96629754,1.0348779)"><tspan
+         sodipodi:role="line"
+         id="tspan7727"
+         style="stroke-width:0.228294"
+         x="77.285172"
+         y="49.344219">z</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;white-space:pre;inline-size:0;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="169.50018"
+       y="57.459427"
+       id="text8657"
+       transform="matrix(0.83376475,0,0,0.89293899,-10.113883,0.84416983)"><tspan
+         id="tspan8655"
+         style="stroke-width:0.264583"
+         x="169.50018"
+         y="57.459427">$\tilde{x}$</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:9.13174px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.228294"
+       x="18.209423"
+       y="49.344219"
+       id="text9321"
+       transform="scale(0.96629754,1.0348779)"><tspan
+         sodipodi:role="line"
+         id="tspan9319"
+         style="stroke-width:0.228294"
+         x="18.209423"
+         y="49.344219">x</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.254956px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 33.175752,80.82952 68.662515,66.740617"
+       id="path14414" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.228982px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 85.92454,66.740617 35.48675,13.990894"
+       id="path14416" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.206682px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 121.41129,12.356429 85.92454,26.445334"
+       id="path14418" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.230143px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 33.175752,12.45444 68.662515,26.445334"
+       id="path14420" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:9.13174px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.228294"
+       x="123.72661"
+       y="129.89014"
+       id="text14940"
+       transform="scale(0.96629754,1.0348779)"><tspan
+         sodipodi:role="line"
+         id="tspan14938"
+         style="stroke-width:0.228294"
+         x="123.72661"
+         y="129.89014"></tspan></text>
+  </g>
+</svg>

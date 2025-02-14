@@ -5,3 +5,5 @@
 !make.sh
 !bibtex.bib
 !/figures
+!*.png
+!*.svg
