@@ -2,4 +2,7 @@
 !synthetic-dataloader_block_diag_test_01
 !synthetic-dataloader_block_diag_train_01
 !synthetic-dataloader_block_diag_val_01
+!synthetic-dataloader_geodesics_test_01
+!synthetic-dataloader_geodesics_train_01
+!synthetic-dataloader_geodesics_val_01
 !.gitignore
