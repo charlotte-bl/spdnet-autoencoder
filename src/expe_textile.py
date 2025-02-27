@@ -16,9 +16,9 @@ from pyriemann.classification import MDM
 from sklearn.model_selection import train_test_split
 
 
-filename = "data/textile/train64.h5"
+filename = "../data/textile/train64.h5"
 f = h5py.File(filename, "r")
-my_data = pd.read_csv("data/textile/train64.csv", delimiter=",")
+my_data = pd.read_csv("../data/textile/train64.csv", delimiter=",")
 
 labels = my_data["indication_type"]
 cool = f["images"]
