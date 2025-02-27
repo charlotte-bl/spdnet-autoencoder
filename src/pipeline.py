@@ -11,7 +11,6 @@ from data_preprocessing import (
     load_preprocess_synthetic_data,
     get_size_matrix_from_loader,
     is_data_with_noise,
-    dataloader_to_datasets,
 )
 
 from models import (

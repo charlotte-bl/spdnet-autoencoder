@@ -1,5 +1,6 @@
 import torch
 from pyriemann.estimation import Covariances
+
 from moabb.datasets import (
     BNCI2014_001,
 )  # On s'interesse à ce dataset par exemple pour l'instant, il en existe pleins d'autres (cf site de MOABB)
@@ -184,7 +185,7 @@ def raw_to_cov(raw_data):
 
 
 def preprocess_data_cov(X, labels, batch_size, noise, std):
-    # add noise if needed
+    # add noise if needed#
     if noise == "salt_pepper":
         dataset = NoisyCleanLabeledDataset(
             X, labels, add_salt_and_pepper_noise_to_covariances, std
