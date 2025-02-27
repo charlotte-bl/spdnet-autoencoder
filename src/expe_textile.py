@@ -1,10 +1,10 @@
 import numpy as np
 import torch
 
-from src.train import train
+from train import train
 from models import Autoencoder_nlayers_regular_SPDnet
-from src.spdnet.loss import RiemannianDistanceLoss
-from src.data_preprocessing import LabeledDataset
+from spdnet.loss import RiemannianDistanceLoss
+from data_preprocessing import LabeledDataset
 
 from skimage import filters
 import h5py
