@@ -1,10 +1,10 @@
-from spdnet.optimizers import RiemannianAdam
+from spdnet.optimizers import MixOptimizer, RiemannianAdam
 import torch
 from tqdm import tqdm
 from data_preprocessing import is_data_with_noise
 
 def train(train_loader,val_loader,model,n_epochs,criterion):
-    optimizer = RiemannianAdam(model.parameters(), lr=0.001)  #optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
+    optimizer = MixOptimizer(model.parameters(), RiemannianAdam, lr=0.001)  #optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
     list_train_loss = []
     list_val_loss = []
     noised = is_data_with_noise(train_loader)
