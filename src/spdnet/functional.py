@@ -54,10 +54,12 @@ def bimap_channels(X,W):
     # for j in range(X.shape[1]):
     #     Pi=Pi+bimap(X,W[j])
     batch_size,channels_in,n_in,_=X.shape
-    channels_out,_,_,n_out=W.shape
+    channels_out=len(W)
+    
+    _,n_out = W[0][0].shape
     P=th.zeros(batch_size,channels_out,n_out,n_out,dtype=X.dtype,device=X.device)
     for co in range(channels_out):
-        P[:,co,:,:]=sum([bimap(X[:,ci,:,:],W[co,ci,:,:]) for ci in range(channels_in)])
+        P[:,co,:,:]=sum([bimap(X[:,ci,:,:],W[co][ci][:,:]) for ci in range(channels_in)])
     return P
 
 def modeig_forward(P,op,eig_mode='svd',param=None):

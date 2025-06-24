@@ -2,6 +2,7 @@ import torch as th
 import torch.nn as nn
 from torch.autograd import Function as F
 from . import functional
+from geoopt import Stiefel, ManifoldParameter
 
 dtype=th.double
 device=th.device('cpu')
@@ -13,10 +14,18 @@ class BiMap(nn.Module):
     Stiefel parameter of size (ho,hi,ni,no)
     """
     def __init__(self,ho,hi,ni,no):
-        super(BiMap, self).__init__()
-        self._W=functional.StiefelParameter(th.empty(ho,hi,ni,no,dtype=dtype,device=device))
+        super().__init__()
+        # We need to create arrays because the stiefel parameter can't optimiser for multiple channels at once
+        self._W = [[ManifoldParameter(th.rand(ni,no ,dtype=dtype,device=device), manifold=Stiefel()) for _ in range(ho)] for _ in range(hi)]
         self._ho=ho; self._hi=hi; self._ni=ni; self._no=no
-        functional.init_bimap_parameter(self._W)
+        
+        # Register the parameters
+        with th.no_grad():
+            for i in range(hi):
+                for j in range(ho):
+                    self._W[i][j].set_(self._W[i][j].manifold.random_naive(*self._W[i][j].shape, dtype=dtype, device=device))
+                    self.register_parameter(f'W_{i}_{j}', self._W[i][j])
+        
     def forward(self,X):
         return functional.bimap_channels(X,self._W)
 
