@@ -43,7 +43,7 @@ def bimap(X,W):
     '''
     return W.t().matmul(X).matmul(W)
 
-def bimap_channels(X,W):
+def bimap_channels(X,W, transpose=False):
     '''
     Bilinear mapping function over multiple input and output channels
     :param X: Input matrix of shape (batch_size,channels_in,n_in,n_in)
@@ -53,13 +53,17 @@ def bimap_channels(X,W):
     # Pi=th.zeros(X.shape[0],1,W.shape[-1],W.shape[-1],dtype=X.dtype,device=X.device)
     # for j in range(X.shape[1]):
     #     Pi=Pi+bimap(X,W[j])
-    batch_size,channels_in,n_in,_=X.shape
-    channels_out=len(W)
+    batch_size,channels_in,ni,_=X.shape
+    channels_out=len(W[0])
     
-    _,n_out = W[0][0].shape
-    P=th.zeros(batch_size,channels_out,n_out,n_out,dtype=X.dtype,device=X.device)
+    no = W[0][0].shape[1 if not transpose else 0]
+    
+    P = th.zeros((batch_size, channels_out, no, no), dtype=X.dtype, device=X.device)
     for co in range(channels_out):
-        P[:,co,:,:]=sum([bimap(X[:,ci,:,:],W[co][ci][:,:]) for ci in range(channels_in)])
+        P[:, co, :, :] = sum([
+            bimap(X[:, ci, :, :], W[ci][co].T if transpose else W[ci][co])
+            for ci in range(channels_in)
+        ])
     return P
 
 def modeig_forward(P,op,eig_mode='svd',param=None):

@@ -15,8 +15,13 @@ class BiMap(nn.Module):
     """
     def __init__(self,ho,hi,ni,no):
         super().__init__()
+        self._ni = ni
+        self._no = no
         # We need to create arrays because the stiefel parameter can't optimiser for multiple channels at once
-        self._W = [[ManifoldParameter(th.rand(ni,no ,dtype=dtype,device=device), manifold=Stiefel()) for _ in range(ho)] for _ in range(hi)]
+        if no > ni:
+            self._W = [[ManifoldParameter(th.rand(no,ni ,dtype=dtype,device=device), manifold=Stiefel()) for _ in range(ho)] for _ in range(hi)]
+        else:
+            self._W = [[ManifoldParameter(th.rand(ni,no ,dtype=dtype,device=device), manifold=Stiefel()) for _ in range(ho)] for _ in range(hi)]
         self._ho=ho; self._hi=hi; self._ni=ni; self._no=no
         
         # Register the parameters
@@ -27,7 +32,7 @@ class BiMap(nn.Module):
                     self.register_parameter(f'W_{i}_{j}', self._W[i][j])
         
     def forward(self,X):
-        return functional.bimap_channels(X,self._W)
+        return functional.bimap_channels(X,self._W, self._no > self._ni)
 
 class LogEig(nn.Module):
     """

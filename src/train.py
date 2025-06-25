@@ -1,4 +1,4 @@
-from spdnet.optimizers import RiemannianAdam
+from geoopt.optim import RiemannianAdam
 import torch
 from tqdm import tqdm
 from data_preprocessing import is_data_with_noise
