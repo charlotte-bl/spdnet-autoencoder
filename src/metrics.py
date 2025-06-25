@@ -104,6 +104,3 @@ def accuracy(auto_encoder,train_loader,val_loader,test_loader,loss):
     #    print(f"| Données encodées : {acc_code} ")
     #    result.append(acc_code)
     return result
-
-   
-

@@ -93,3 +93,4 @@ class CNNSPDNetBN_Torch(NeuralNetClassifier):
     def __init__(self, **kwargs):
 
         super(CNNSPDNetBN_Torch, self).__init__(**kwargs)
+        
