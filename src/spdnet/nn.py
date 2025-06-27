@@ -87,7 +87,7 @@ class BatchNormSPD(nn.Module):
     def __init__(self,n):
         super(__class__,self).__init__()
         self.momentum=0.1
-        self.running_mean=th.eye(n,dtype=dtype) ################################
+        self.register_buffer('running_mean', th.eye(n, dtype=dtype))
         # self.running_mean=nn.Parameter(th.eye(n,dtype=dtype),requires_grad=False)
         self.weight=functional.SPDParameter(th.eye(n,dtype=dtype))
     def forward(self,X):
