@@ -108,7 +108,6 @@ class CNNSPDNetBN_Module(nn.Module):
         self.bn_momentum = bn_momentum
         self.criterion = torch.nn.CrossEntropyLoss()
 
-
         self.cnn_layers = []
         self.trans_layers = []
         # CNN part

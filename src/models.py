@@ -224,5 +224,4 @@ class Autoencoder_hourglass_channel_SPDnet(nn.Module):
         return reconstruction.double()
     def get_spd_parameters(self):
         return [self.other_param]
-
-
+    

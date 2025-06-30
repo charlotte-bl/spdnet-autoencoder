@@ -2,6 +2,7 @@ import torch as th
 import torch.nn as nn
 from torch.autograd import Function as F
 from . import functional
+from geoopt import Stiefel, ManifoldParameter
 
 dtype=th.double
 device=th.device('cpu')
@@ -13,12 +14,25 @@ class BiMap(nn.Module):
     Stiefel parameter of size (ho,hi,ni,no)
     """
     def __init__(self,ho,hi,ni,no):
-        super(BiMap, self).__init__()
-        self._W=functional.StiefelParameter(th.empty(ho,hi,ni,no,dtype=dtype,device=device))
+        super().__init__()
+        self._ni = ni
+        self._no = no
+        # We need to create arrays because the stiefel parameter can't optimiser for multiple channels at once
+        if no > ni:
+            self._W = [[ManifoldParameter(th.rand(no,ni ,dtype=dtype,device=device), manifold=Stiefel()) for _ in range(ho)] for _ in range(hi)]
+        else:
+            self._W = [[ManifoldParameter(th.rand(ni,no ,dtype=dtype,device=device), manifold=Stiefel()) for _ in range(ho)] for _ in range(hi)]
         self._ho=ho; self._hi=hi; self._ni=ni; self._no=no
-        functional.init_bimap_parameter(self._W)
+        
+        # Register the parameters
+        with th.no_grad():
+            for i in range(hi):
+                for j in range(ho):
+                    self._W[i][j].set_(self._W[i][j].manifold.random_naive(*self._W[i][j].shape, dtype=dtype, device=device))
+                    self.register_parameter(f'W_{i}_{j}', self._W[i][j])
+        
     def forward(self,X):
-        return functional.bimap_channels(X,self._W)
+        return functional.bimap_channels(X,self._W, self._no > self._ni)
 
 class LogEig(nn.Module):
     """
@@ -73,7 +87,7 @@ class BatchNormSPD(nn.Module):
     def __init__(self,n):
         super(__class__,self).__init__()
         self.momentum=0.1
-        self.running_mean=th.eye(n,dtype=dtype) ################################
+        self.register_buffer('running_mean', th.eye(n, dtype=dtype))
         # self.running_mean=nn.Parameter(th.eye(n,dtype=dtype),requires_grad=False)
         self.weight=functional.SPDParameter(th.eye(n,dtype=dtype))
     def forward(self,X):
